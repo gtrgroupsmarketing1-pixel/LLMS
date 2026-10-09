@@ -3,6 +3,7 @@ import { errorHandler } from './middleware/error';
 import { authRouter } from './routes/auth.routes';
 import { tenantRouter } from './routes/tenant.routes';
 import { ingestionRouter } from './routes/ingestion.routes';
+import { segmentationRouter } from './routes/segmentation.routes';
 
 export function createApp() {
   const app = express();
@@ -12,6 +13,7 @@ export function createApp() {
   app.use('/auth', authRouter);
   app.use('/tenants', tenantRouter);
   app.use('/ingestion', ingestionRouter);
+  app.use('/segmentation', segmentationRouter);
 
   app.use(errorHandler);
   return app;

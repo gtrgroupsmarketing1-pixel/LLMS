@@ -15,7 +15,8 @@
     "@lmms/config": "workspace:*",
     "@lmms/contracts": "workspace:*",
     "@lmms/db": "workspace:*",
-    "@lmms/ingestion": "workspace:*"
+    "@lmms/ingestion": "workspace:*",
+    "@lmms/segmentation": "workspace:*"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
