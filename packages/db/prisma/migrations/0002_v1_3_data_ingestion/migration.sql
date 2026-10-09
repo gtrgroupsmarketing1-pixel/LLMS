@@ -1,0 +1,4 @@
+-- TODO: regenerate in Codespaces with:
+--   pnpm --filter @lmms/db exec prisma migrate dev --name v1_3_data_ingestion
+-- This placeholder exists so the migration history has a slot. Do not
+-- hand-write SQL.

@@ -238,3 +238,66 @@ model AuditLog {
   @@index([tenantId, timestamp])
   @@index([tenantId, action])
 }
+
+// === V1.3 Data Ingestion additions ===
+
+enum CSVImportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  PARTIAL
+}
+
+model EndCustomer {
+  id              String   @id @default(uuid())
+  tenantId        String
+  phone           String
+  email           String?
+  name            String?
+  language        String   @default("ar")
+  zone            String?
+  source          String
+  externalId      String?
+  consentVerified Boolean  @default(false)
+  needsReview     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([tenantId, phone])
+  @@index([tenantId, email])
+  @@index([tenantId, needsReview])
+}
+
+model Order {
+  id          String   @id @default(uuid())
+  tenantId    String
+  customerId  String
+  externalId  String?
+  orderDate   DateTime
+  serviceType String?
+  amount      Decimal  @db.Decimal(12, 2)
+  currency    String
+  status      String
+  createdAt   DateTime @default(now())
+
+  @@unique([tenantId, externalId])
+  @@index([tenantId, customerId])
+  @@index([tenantId, orderDate])
+}
+
+model CSVImport {
+  id           String          @id @default(uuid())
+  tenantId     String
+  filename     String
+  rowsTotal    Int             @default(0)
+  rowsImported Int             @default(0)
+  rowsFlagged  Int             @default(0)
+  rowsFailed   Int             @default(0)
+  status       CSVImportStatus @default(PENDING)
+  errorReport  Json?
+  startedAt    DateTime        @default(now())
+  completedAt  DateTime?
+
+  @@index([tenantId, status])
+}
