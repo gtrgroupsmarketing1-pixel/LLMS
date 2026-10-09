@@ -125,7 +125,7 @@ export async function importCustomerCsv(opts: ImportOptions): Promise<ImportSumm
         rowsFailed: failed,
         status,
         completedAt: new Date(),
-        errorReport: failed > 0 ? { failedSample: failed } : null,
+        errorReport: failed > 0 ? { failedSample: failed } : undefined,
       },
     });
 
