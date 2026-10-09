@@ -1,0 +1,19 @@
+{
+  "name": "@lmms/segmentation",
+  "version": "0.0.1",
+  "private": true,
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.23.8",
+    "@lmms/db": "workspace:*",
+    "@lmms/config": "workspace:*",
+    "@lmms/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
