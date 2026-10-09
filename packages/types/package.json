@@ -1,0 +1,9 @@
+{
+  "name": "@lmms/types",
+  "private": true,
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}
