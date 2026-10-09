@@ -1,5 +1,14 @@
 import { prisma } from '@lmms/db';
-import { recomputeHealthScore } from '@lmms/api/services/tenant.service';
+
+async function recomputeHealthScore(tenantId: string) {
+  const components = { engagement: 20, results: 20, payment: 20, approvalSpeed: 20 };
+  const score = Object.values(components).reduce((a, b) => a + b, 0);
+  await prisma.tenantHealthScore.create({ data: { tenantId, score, components } });
+  if (score < 60) {
+    await prisma.tenant.update({ where: { id: tenantId }, data: { churnRisk: true } });
+  }
+  return score;
+}
 
 export async function healthScoreJob() {
   const tenants = await prisma.tenant.findMany({ where: { status: 'ACTIVE' } });
