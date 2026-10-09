@@ -301,3 +301,51 @@ model CSVImport {
 
   @@index([tenantId, status])
 }
+
+// === V1.4 Segmentation additions ===
+
+enum SegmentMode {
+  BOTH
+  ERP_ONLY
+  STANDALONE_ONLY
+}
+
+model Segment {
+  id            String      @id @default(uuid())
+  tenantId      String
+  name          String
+  nameAr        String?
+  mode          SegmentMode @default(BOTH)
+  definition    Json
+  isPrebuilt    Boolean     @default(false)
+  isSystem      Boolean     @default(false)
+  lastRefreshed DateTime?
+  lastCount     Int         @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([tenantId, name])
+  @@index([tenantId, mode])
+  @@index([tenantId, isPrebuilt])
+}
+
+model SegmentMembership {
+  segmentId  String
+  customerId String
+  tenantId   String
+  addedAt    DateTime @default(now())
+
+  @@id([segmentId, customerId])
+  @@index([tenantId, segmentId])
+  @@index([tenantId, customerId])
+}
+
+model SegmentSizeSnapshot {
+  id        String   @id @default(uuid())
+  tenantId  String
+  segmentId String
+  date      DateTime @default(now())
+  size      Int
+
+  @@index([tenantId, segmentId, date])
+}
