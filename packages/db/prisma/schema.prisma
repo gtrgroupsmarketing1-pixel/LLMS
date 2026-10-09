@@ -1,0 +1,240 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OperatingMode {
+  ERP_CONNECTED
+  STANDALONE
+  UPGRADING
+}
+
+enum UserKind {
+  AGENCY
+  CLIENT
+}
+
+enum AgencyRole {
+  OWNER
+  ADMIN
+  STRATEGIST
+  DESIGNER
+  OPS
+}
+
+enum ClientRole {
+  OWNER
+  MANAGER
+  BILLING
+}
+
+enum DataSourceType {
+  ERP
+  CSV
+  MANUAL
+  WEBSITE_FORM
+  WHATSAPP_OPTIN
+}
+
+enum DataSourceStatus {
+  CONNECTED
+  SYNCING
+  STALE
+  FAILED
+  DISCONNECTED
+}
+
+enum ConsentChannel {
+  WHATSAPP
+  SMS
+  EMAIL
+}
+
+enum ConsentPurpose {
+  MARKETING
+  TRANSACTIONAL
+  AUTHENTICATION
+  SERVICE
+}
+
+enum ConsentStatus {
+  OPT_IN
+  OPT_OUT
+  PENDING
+  WITHDRAWN
+}
+
+model Tenant {
+  id              String        @id @default(uuid())
+  nameAr          String
+  nameEn          String
+  mode            OperatingMode
+  country         String
+  currency        String
+  timezone        String
+  package         String
+  status          String        @default("ACTIVE")
+  churnRisk       Boolean       @default(false)
+  upgradeReady    Boolean       @default(false)
+  greenTickStatus String        @default("NOT_APPLIED")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([country, status])
+}
+
+model User {
+  id           String      @id @default(uuid())
+  kind         UserKind
+  email        String?     @unique
+  phone        String?     @unique
+  passwordHash String?
+  agencyRole   AgencyRole?
+  clientRole   ClientRole?
+  tenantId     String?
+  status       String      @default("ACTIVE")
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  sessions      Session[]
+  refreshTokens RefreshToken[]
+
+  @@index([tenantId, kind])
+}
+
+model Session {
+  id        String    @id @default(uuid())
+  userId    String
+  userAgent String?
+  ip        String?
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+  revokedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  jti       String    @unique
+  familyId  String
+  hash      String
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+  usedAt    DateTime?
+  revokedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model OtpCode {
+  id         String    @id @default(uuid())
+  phone      String
+  hash       String
+  purpose    String    @default("LOGIN")
+  attempts   Int       @default(0)
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime
+  consumedAt DateTime?
+
+  @@index([phone, createdAt])
+}
+
+model Location {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  address   String?
+  zone      String?
+  country   String
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+}
+
+model TenantHealthScore {
+  id         String   @id @default(uuid())
+  tenantId   String
+  date       DateTime @default(now())
+  score      Int
+  components Json
+
+  @@index([tenantId, date])
+}
+
+model UpgradeReadiness {
+  id       String   @id @default(uuid())
+  tenantId String
+  date     DateTime @default(now())
+  score    Int
+  criteria Json
+
+  @@index([tenantId, date])
+}
+
+model DataSource {
+  id         String           @id @default(uuid())
+  tenantId   String
+  type       DataSourceType
+  status     DataSourceStatus @default(CONNECTED)
+  lastSyncAt DateTime?
+  config     Json?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@index([tenantId, type])
+}
+
+model ConsentRecord {
+  id         String         @id @default(uuid())
+  tenantId   String
+  customerId String
+  channel    ConsentChannel
+  purpose    ConsentPurpose @default(MARKETING)
+  status     ConsentStatus
+  source     String
+  evidence   String?
+  timestamp  DateTime       @default(now())
+  expiresAt  DateTime?
+  ipAddress  String?
+  userAgent  String?
+
+  @@index([tenantId, customerId, channel, purpose])
+  @@index([tenantId, status])
+}
+
+model DoNotContact {
+  id         String   @id @default(uuid())
+  tenantId   String
+  customerId String
+  reason     String
+  addedBy    String
+  addedAt    DateTime @default(now())
+
+  @@unique([tenantId, customerId])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String
+  actor      String
+  action     String
+  entity     String
+  timestamp  DateTime @default(now())
+  consentRef String?
+  hash       String?  @unique
+  prevHash   String?
+  immutable  Boolean  @default(true)
+
+  @@index([tenantId, timestamp])
+  @@index([tenantId, action])
+}
