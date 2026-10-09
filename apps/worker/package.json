@@ -8,9 +8,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@lmms/api": "workspace:*",
     "@lmms/config": "workspace:*",
-    "@lmms/db": "workspace:*"
+    "@lmms/db": "workspace:*",
+    "@lmms/ingestion": "workspace:*"
   },
   "devDependencies": {
     "tsx": "^4.19.1",
