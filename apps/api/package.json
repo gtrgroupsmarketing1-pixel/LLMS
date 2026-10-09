@@ -9,14 +9,17 @@
   },
   "dependencies": {
     "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
     "@lmms/audit": "workspace:*",
     "@lmms/auth": "workspace:*",
     "@lmms/config": "workspace:*",
     "@lmms/contracts": "workspace:*",
-    "@lmms/db": "workspace:*"
+    "@lmms/db": "workspace:*",
+    "@lmms/ingestion": "workspace:*"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.11",
     "tsx": "^4.19.1",
     "typescript": "^5.4.5"
   }
