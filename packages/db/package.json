@@ -5,14 +5,20 @@
   "main": "index.ts",
   "types": "index.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "seed": "tsx prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",
+    "argon2": "^0.41.1",
     "@lmms/config": "workspace:*"
   },
   "devDependencies": {
     "prisma": "^5.20.0",
+    "tsx": "^4.19.1",
     "typescript": "^5.4.5"
   }
 }
