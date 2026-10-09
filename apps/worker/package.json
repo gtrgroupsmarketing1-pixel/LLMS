@@ -8,6 +8,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@lmms/api": "workspace:*",
     "@lmms/config": "workspace:*",
     "@lmms/db": "workspace:*"
   },
