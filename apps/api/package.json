@@ -1,0 +1,23 @@
+{
+  "name": "@lmms/api",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "@lmms/audit": "workspace:*",
+    "@lmms/auth": "workspace:*",
+    "@lmms/config": "workspace:*",
+    "@lmms/contracts": "workspace:*",
+    "@lmms/db": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "tsx": "^4.19.1",
+    "typescript": "^5.4.5"
+  }
+}
