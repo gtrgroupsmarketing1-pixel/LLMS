@@ -2,6 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardTitle,
+  Input,
+  Label,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@lmms/ui';
 import { authedFetch } from '../../../../lib/session';
 
 interface DataSourceRow {
@@ -73,68 +87,75 @@ export default function DataSourcesPage() {
   }
 
   return (
-    <main dir="rtl" style={{ padding: 24, fontFamily: 'system-ui, sans-serif' }}>
-      <h1 style={{ fontSize: 20, marginBottom: 16 }}>Data Sources</h1>
-
-      <div
-        style={{
-          padding: 16,
-          border: '1px dashed #cbd5e1',
-          borderRadius: 8,
-          marginBottom: 16,
-          background: 'white',
-        }}
-      >
-        <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 10px 0' }}>
-          Upload a customer CSV. Columns required: phone. Optional: email, name,
-          language, zone, consent_status.
+    <main className="p-8 max-w-4xl mx-auto space-y-6">
+      <header>
+        <h1 className="text-2xl font-bold">Data Sources</h1>
+        <p className="text-sm text-slate-500">
+          Upload customer CSVs, view freshness, and manage integrations.
         </p>
-        <input
-          type="file"
-          accept=".csv"
-          onChange={uploadCsv}
-          disabled={uploading}
-          style={{ fontSize: 13 }}
-        />
-        {uploading && <p style={{ fontSize: 13 }}>Uploading…</p>}
-      </div>
+      </header>
 
-      {result && (
-        <p style={{ color: '#16a34a', fontSize: 13, marginBottom: 12 }}>{result}</p>
-      )}
-      {error && (
-        <p style={{ color: '#dc2626', fontSize: 13, marginBottom: 12 }}>{error}</p>
-      )}
+      <Card>
+        <CardBody className="space-y-3">
+          <CardTitle>Import customers from CSV</CardTitle>
+          <p className="text-sm text-slate-500">
+            Required column: <code>phone</code>. Optional: <code>email</code>,{' '}
+            <code>name</code>, <code>language</code>, <code>zone</code>,{' '}
+            <code>consent_status</code>.
+          </p>
+          <div className="space-y-1">
+            <Label htmlFor="csv">CSV file</Label>
+            <Input
+              id="csv"
+              type="file"
+              accept=".csv"
+              onChange={uploadCsv}
+              disabled={uploading}
+            />
+          </div>
+          {uploading && <p className="text-sm">Uploading…</p>}
+          {result && <p className="text-sm text-emerald-600">{result}</p>}
+          {error && <p className="text-sm text-red-600">{error}</p>}
+        </CardBody>
+      </Card>
 
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-        <thead>
-          <tr style={{ textAlign: 'right', background: '#f1f5f9' }}>
-            <th style={{ padding: 8 }}>Type</th>
-            <th style={{ padding: 8 }}>Status</th>
-            <th style={{ padding: 8 }}>Last sync</th>
-            <th style={{ padding: 8 }}>Fresh</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sources.length === 0 && (
-            <tr>
-              <td colSpan={4} style={{ padding: 12, color: '#64748b' }}>
-                No data sources configured yet.
-              </td>
-            </tr>
+      <Card>
+        <CardBody className="space-y-3">
+          <CardTitle>Configured sources</CardTitle>
+          {sources.length === 0 ? (
+            <p className="text-sm text-slate-500">No data sources yet.</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Last sync</TableHead>
+                  <TableHead>Fresh</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sources.map((s) => (
+                  <TableRow key={s.id}>
+                    <TableCell>{s.type}</TableCell>
+                    <TableCell>{s.status}</TableCell>
+                    <TableCell>
+                      {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleString() : '—'}
+                    </TableCell>
+                    <TableCell>
+                      {s.fresh ? (
+                        <Badge variant="success">Fresh</Badge>
+                      ) : (
+                        <Badge variant="warning">Stale</Badge>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
-          {sources.map((s) => (
-            <tr key={s.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-              <td style={{ padding: 8 }}>{s.type}</td>
-              <td style={{ padding: 8 }}>{s.status}</td>
-              <td style={{ padding: 8 }}>
-                {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleString() : '—'}
-              </td>
-              <td style={{ padding: 8 }}>{s.fresh ? '🟢' : '🟡'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        </CardBody>
+      </Card>
     </main>
   );
 }

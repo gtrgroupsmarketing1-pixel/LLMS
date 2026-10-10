@@ -2,6 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import {
+  Badge,
+  Button,
+  Card,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@lmms/ui';
 import { authedFetch, getAccessToken } from '../../lib/session';
 
 interface Tenant {
@@ -15,6 +26,12 @@ interface Tenant {
   churnRisk: boolean;
   upgradeReady: boolean;
 }
+
+const modeBadge: Record<string, 'info' | 'success' | 'warning'> = {
+  ERP_CONNECTED: 'success',
+  STANDALONE: 'info',
+  UPGRADING: 'warning',
+};
 
 export default function TenantsPage() {
   const [items, setItems] = useState<Tenant[]>([]);
@@ -40,80 +57,72 @@ export default function TenantsPage() {
   }, []);
 
   return (
-    <main dir="rtl" style={{ padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>
-      <header
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 20,
-        }}
-      >
-        <h1 style={{ fontSize: 22 }}>Tenants</h1>
-        <button
+    <main className="p-8 max-w-6xl mx-auto space-y-6">
+      <header className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Tenants</h1>
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => {
             localStorage.removeItem('lmms.accessToken');
             localStorage.removeItem('lmms.refreshToken');
             window.location.href = '/login';
           }}
-          style={{
-            padding: '6px 12px',
-            background: 'transparent',
-            border: '1px solid #cbd5e1',
-            borderRadius: 6,
-            fontSize: 13,
-            cursor: 'pointer',
-          }}
         >
           Sign out
-        </button>
+        </Button>
       </header>
 
-      {loading && <p>Loading…</p>}
-      {error && <p style={{ color: '#dc2626' }}>{error}</p>}
+      {loading && <p className="text-slate-500">Loading…</p>}
+      {error && <p className="text-red-600">{error}</p>}
 
       {!loading && !error && items.length === 0 && (
-        <p style={{ color: '#64748b' }}>
-          No tenants yet. Create one via the API to get started.
-        </p>
+        <Card>
+          <div className="p-6 text-center text-slate-500 text-sm">
+            No tenants yet.
+          </div>
+        </Card>
       )}
 
       {items.length > 0 && (
-        <table
-          style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            fontSize: 13,
-          }}
-        >
-          <thead>
-            <tr style={{ textAlign: 'right', background: '#f1f5f9' }}>
-              <th style={{ padding: 8 }}>Name (EN)</th>
-              <th style={{ padding: 8 }}>Name (AR)</th>
-              <th style={{ padding: 8 }}>Mode</th>
-              <th style={{ padding: 8 }}>Country</th>
-              <th style={{ padding: 8 }}>Package</th>
-              <th style={{ padding: 8 }}>Flags</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((t) => (
-              <tr key={t.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                <td style={{ padding: 8 }}>
-                  <Link href={`/tenants/${t.id}`}>{t.nameEn}</Link>
-                </td>
-                <td style={{ padding: 8 }}>{t.nameAr}</td>
-                <td style={{ padding: 8 }}>{t.mode}</td>
-                <td style={{ padding: 8 }}>{t.country}</td>
-                <td style={{ padding: 8 }}>{t.package}</td>
-                <td style={{ padding: 8 }}>
-                  {t.churnRisk && <span title="Churn risk">⚠️</span>}
-                  {t.upgradeReady && <span title="Upgrade ready">⬆️</span>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name (EN)</TableHead>
+                <TableHead>Name (AR)</TableHead>
+                <TableHead>Mode</TableHead>
+                <TableHead>Country</TableHead>
+                <TableHead>Package</TableHead>
+                <TableHead>Flags</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {items.map((t) => (
+                <TableRow key={t.id}>
+                  <TableCell>
+                    <Link
+                      href={`/tenants/${t.id}`}
+                      className="text-slate-900 underline-offset-2 hover:underline"
+                    >
+                      {t.nameEn}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{t.nameAr}</TableCell>
+                  <TableCell>
+                    <Badge variant={modeBadge[t.mode] ?? 'default'}>{t.mode}</Badge>
+                  </TableCell>
+                  <TableCell>{t.country}</TableCell>
+                  <TableCell>{t.package}</TableCell>
+                  <TableCell className="space-x-1 rtl:space-x-reverse">
+                    {t.churnRisk && <Badge variant="danger">Churn risk</Badge>}
+                    {t.upgradeReady && <Badge variant="info">Upgrade ready</Badge>}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
       )}
     </main>
   );

@@ -2,6 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@lmms/ui';
 import { authedFetch } from '../../../../lib/session';
 
 interface Segment {
@@ -18,12 +31,7 @@ interface Segment {
 
 interface PreviewResult {
   count: number;
-  sample: Array<{
-    id: string;
-    name: string | null;
-    phone: string;
-    email: string | null;
-  }>;
+  sample: Array<{ id: string; name: string | null; phone: string; email: string | null }>;
   elapsedMs: number;
 }
 
@@ -36,9 +44,7 @@ export default function SegmentsPage() {
 
   async function load() {
     try {
-      const r = await authedFetch(
-        `/api/segmentation/tenants/${params.id}/segments`,
-      );
+      const r = await authedFetch(`/api/segmentation/tenants/${params.id}/segments`);
       if (!r.ok) {
         setError(`Failed: ${r.status}`);
         return;
@@ -55,13 +61,9 @@ export default function SegmentsPage() {
   }, [params.id]);
 
   async function previewSegment(id: string) {
-    try {
-      const r = await authedFetch(`/api/segmentation/segments/${id}/preview`);
-      if (!r.ok) return;
-      setPreview((await r.json()) as PreviewResult);
-    } catch {
-      // ignore
-    }
+    const r = await authedFetch(`/api/segmentation/segments/${id}/preview`);
+    if (!r.ok) return;
+    setPreview((await r.json()) as PreviewResult);
   }
 
   async function ensurePrebuilt() {
@@ -78,127 +80,95 @@ export default function SegmentsPage() {
   }
 
   return (
-    <main dir="rtl" style={{ padding: 24, fontFamily: 'system-ui, sans-serif' }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 16,
-        }}
-      >
-        <h1 style={{ fontSize: 20 }}>Segments</h1>
-        <button
-          onClick={ensurePrebuilt}
-          disabled={seeding}
-          style={{
-            padding: '6px 12px',
-            background: '#0f172a',
-            color: 'white',
-            border: 0,
-            borderRadius: 6,
-            fontSize: 13,
-            cursor: seeding ? 'not-allowed' : 'pointer',
-          }}
-        >
+    <main className="p-8 max-w-5xl mx-auto space-y-6">
+      <header className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Segments</h1>
+          <p className="text-sm text-slate-500">
+            Target groups for campaigns and automations.
+          </p>
+        </div>
+        <Button onClick={ensurePrebuilt} disabled={seeding} size="sm">
           {seeding ? 'Seeding…' : 'Seed prebuilt'}
-        </button>
-      </div>
+        </Button>
+      </header>
 
-      {error && (
-        <p style={{ color: '#dc2626', fontSize: 13, marginBottom: 12 }}>{error}</p>
-      )}
+      {error && <p className="text-red-600">{error}</p>}
 
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-        <thead>
-          <tr style={{ textAlign: 'right', background: '#f1f5f9' }}>
-            <th style={{ padding: 8 }}>Name</th>
-            <th style={{ padding: 8 }}>Arabic</th>
-            <th style={{ padding: 8 }}>Mode</th>
-            <th style={{ padding: 8 }}>Size</th>
-            <th style={{ padding: 8 }}>Status</th>
-            <th style={{ padding: 8 }}></th>
-          </tr>
-        </thead>
-        <tbody>
-          {segments.length === 0 && (
-            <tr>
-              <td colSpan={6} style={{ padding: 12, color: '#64748b' }}>
-                No segments yet. Click &quot;Seed prebuilt&quot; to add the standard
-                library.
-              </td>
-            </tr>
-          )}
-          {segments.map((s) => (
-            <tr key={s.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-              <td style={{ padding: 8 }}>{s.name}</td>
-              <td style={{ padding: 8 }}>{s.nameAr ?? '—'}</td>
-              <td style={{ padding: 8 }}>{s.mode}</td>
-              <td style={{ padding: 8 }}>{s.lastCount}</td>
-              <td style={{ padding: 8 }}>
-                {!s.available && (
-                  <span title={s.lockReason ?? ''}>🔒 {s.lockReason}</span>
-                )}
-                {s.available && s.campaignBlocked && (
-                  <span title="Stale ERP data">⚠️ stale</span>
-                )}
-                {s.available && !s.campaignBlocked && '✅'}
-              </td>
-              <td style={{ padding: 8 }}>
-                <button
-                  onClick={() => previewSegment(s.id)}
-                  disabled={!s.available}
-                  style={{
-                    padding: '4px 10px',
-                    fontSize: 12,
-                    border: '1px solid #cbd5e1',
-                    background: 'white',
-                    borderRadius: 4,
-                    cursor: s.available ? 'pointer' : 'not-allowed',
-                  }}
-                >
-                  Preview
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Arabic</TableHead>
+              <TableHead>Mode</TableHead>
+              <TableHead>Size</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {segments.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-slate-500">
+                  No segments yet. Click &quot;Seed prebuilt&quot; to add the standard
+                  library.
+                </TableCell>
+              </TableRow>
+            )}
+            {segments.map((s) => (
+              <TableRow key={s.id}>
+                <TableCell>{s.name}</TableCell>
+                <TableCell>{s.nameAr ?? '—'}</TableCell>
+                <TableCell>{s.mode}</TableCell>
+                <TableCell>{s.lastCount}</TableCell>
+                <TableCell>
+                  {!s.available && (
+                    <Badge variant="outline" title={s.lockReason ?? ''}>
+                      Locked — {s.lockReason}
+                    </Badge>
+                  )}
+                  {s.available && s.campaignBlocked && (
+                    <Badge variant="warning">Stale ERP data</Badge>
+                  )}
+                  {s.available && !s.campaignBlocked && (
+                    <Badge variant="success">Ready</Badge>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => previewSegment(s.id)}
+                    disabled={!s.available}
+                  >
+                    Preview
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
 
       {preview && (
-        <section
-          style={{
-            marginTop: 24,
-            padding: 16,
-            background: '#f8fafc',
-            borderRadius: 8,
-          }}
-        >
-          <h2 style={{ fontSize: 15, marginBottom: 8 }}>
-            Preview — {preview.count} customers ({preview.elapsedMs}ms)
-          </h2>
-          <ul style={{ fontSize: 13, listStyle: 'none', padding: 0 }}>
-            {preview.sample.map((s) => (
-              <li key={s.id} style={{ padding: '4px 0', direction: 'ltr' }}>
-                {s.name ?? '—'} · {s.phone} · {s.email ?? '—'}
-              </li>
-            ))}
-          </ul>
-          <button
-            onClick={() => setPreview(null)}
-            style={{
-              marginTop: 8,
-              padding: '4px 10px',
-              fontSize: 12,
-              border: '1px solid #cbd5e1',
-              background: 'white',
-              borderRadius: 4,
-              cursor: 'pointer',
-            }}
-          >
-            Close
-          </button>
-        </section>
+        <Card>
+          <CardBody className="space-y-3">
+            <CardTitle>
+              Preview — {preview.count} customers ({preview.elapsedMs}ms)
+            </CardTitle>
+            <ul className="text-sm space-y-1">
+              {preview.sample.map((s) => (
+                <li key={s.id} dir="ltr" className="text-slate-700">
+                  {s.name ?? '—'} · {s.phone} · {s.email ?? '—'}
+                </li>
+              ))}
+            </ul>
+            <Button variant="outline" size="sm" onClick={() => setPreview(null)}>
+              Close
+            </Button>
+          </CardBody>
+        </Card>
       )}
     </main>
   );

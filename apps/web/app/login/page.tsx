@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Button, Card, CardBody, Input, Label } from '@lmms/ui';
 import { setTokens } from '../../lib/session';
 
 export default function LoginPage() {
@@ -34,57 +35,43 @@ export default function LoginPage() {
   }
 
   return (
-    <main
-      dir="rtl"
-      style={{
-        maxWidth: 400,
-        margin: '5rem auto',
-        padding: '0 1rem',
-        fontFamily: 'system-ui, sans-serif',
-      }}
-    >
-      <h1 style={{ fontSize: 24, marginBottom: 4 }}>LMMS</h1>
-      <p style={{ color: '#64748b', marginBottom: 24, fontSize: 13 }}>
-        Agency sign-in
-      </p>
-      <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="email"
-          required
-          style={{ padding: 12, fontSize: 15, border: '1px solid #cbd5e1', borderRadius: 8 }}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="current-password"
-          required
-          style={{ padding: 12, fontSize: 15, border: '1px solid #cbd5e1', borderRadius: 8 }}
-        />
-        <button
-          type="submit"
-          disabled={busy}
-          style={{
-            padding: 12,
-            background: busy ? '#94a3b8' : '#0f172a',
-            color: 'white',
-            border: 0,
-            borderRadius: 8,
-            fontSize: 15,
-            cursor: busy ? 'not-allowed' : 'pointer',
-          }}
-        >
-          {busy ? 'Signing in…' : 'Sign in'}
-        </button>
-      </form>
-      {error && (
-        <p style={{ color: '#dc2626', marginTop: 12, fontSize: 13 }}>{error}</p>
-      )}
+    <main className="min-h-screen flex items-center justify-center p-4">
+      <Card className="w-full max-w-sm">
+        <CardBody className="space-y-4">
+          <header>
+            <h1 className="text-xl font-bold">LMMS</h1>
+            <p className="text-sm text-slate-500">Agency sign-in</p>
+          </header>
+          <form onSubmit={submit} className="space-y-3">
+            <div className="space-y-1">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                dir="ltr"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                dir="ltr"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button type="submit" disabled={busy} className="w-full">
+              {busy ? 'Signing in…' : 'Sign in'}
+            </Button>
+            {error && <p className="text-sm text-red-600">{error}</p>}
+          </form>
+        </CardBody>
+      </Card>
     </main>
   );
 }
