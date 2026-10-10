@@ -4,6 +4,7 @@ import { authRouter } from './routes/auth.routes';
 import { tenantRouter } from './routes/tenant.routes';
 import { ingestionRouter } from './routes/ingestion.routes';
 import { segmentationRouter } from './routes/segmentation.routes';
+import { campaignRouter } from './routes/campaign.routes';
 
 export function createApp() {
   const app = express();
@@ -14,6 +15,7 @@ export function createApp() {
   app.use('/tenants', tenantRouter);
   app.use('/ingestion', ingestionRouter);
   app.use('/segmentation', segmentationRouter);
+  app.use('/campaigns', campaignRouter);
 
   app.use(errorHandler);
   return app;

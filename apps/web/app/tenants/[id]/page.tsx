@@ -165,7 +165,9 @@ export default function TenantDetailPage() {
             <CardBody className="space-y-3">
               <CardTitle>Campaigns</CardTitle>
               <p className="text-sm text-slate-500">
-                Campaigns module lands in V1.5.
+                <Link href={`/tenants/${tenant.id}/campaigns`} className="underline">
+                  Open the campaigns page →
+                </Link>
               </p>
             </CardBody>
           </Card>
