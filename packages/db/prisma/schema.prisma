@@ -681,3 +681,76 @@ model AutomationKillSwitch {
 
   @@unique([tenantId, automationId])
 }
+
+// === V1.8 Client Portal additions ===
+
+enum PortalTicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum PortalTicketKind {
+  SUPPORT
+  BUG
+  BILLING
+  ESCALATION
+}
+
+model PortalTicket {
+  id         String             @id @default(uuid())
+  tenantId   String
+  customerId String?
+  createdBy  String
+  kind       PortalTicketKind   @default(SUPPORT)
+  subject    String
+  body       String
+  status     PortalTicketStatus @default(OPEN)
+  assignedTo String?
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
+}
+
+model PortalInternalComment {
+  id         String   @id @default(uuid())
+  tenantId   String
+  authorId   String
+  authorKind String
+  entityType String
+  entityId   String
+  body       String
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, entityType, entityId])
+}
+
+model PortalPreference {
+  id                          String    @id @default(uuid())
+  userId                      String    @unique
+  language                    String    @default("ar")
+  upgradePromptDismissedUntil DateTime?
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime  @updatedAt
+}
+
+model ClientMessageInbox {
+  id          String    @id @default(uuid())
+  tenantId    String
+  customerId  String
+  channel     String    @default("WHATSAPP")
+  direction   String
+  body        String
+  fromPhone   String?
+  toPhone     String?
+  status      String    @default("RECEIVED")
+  repliedById String?
+  repliedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([tenantId, status])
+  @@index([tenantId, customerId])
+}
