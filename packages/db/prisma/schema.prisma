@@ -349,3 +349,181 @@ model SegmentSizeSnapshot {
 
   @@index([tenantId, segmentId, date])
 }
+
+// === V1.5 WhatsApp Campaign Engine additions ===
+
+enum TemplateStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+  PAUSED
+  DISABLED
+}
+
+enum TemplateCategory {
+  MARKETING
+  UTILITY
+  AUTHENTICATION
+  SERVICE
+}
+
+enum CampaignStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  SCHEDULED
+  SENDING
+  SENT
+  PAUSED
+  CANCELLED
+  FAILED
+}
+
+enum MessageStatus {
+  QUEUED
+  SENDING
+  SENT
+  DELIVERED
+  READ
+  REPLIED
+  FAILED
+  UNDELIVERED
+  OPT_OUT
+}
+
+model Template {
+  id              String           @id @default(uuid())
+  tenantId        String
+  name            String
+  category        TemplateCategory
+  language        String
+  bodyText        String
+  variables       Json
+  metaId          String?
+  groupId         String?
+  status          TemplateStatus   @default(DRAFT)
+  version         Int              @default(1)
+  rejectionReason String?
+  submittedAt     DateTime?
+  approvedAt      DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@unique([tenantId, name, language, version])
+  @@index([tenantId, status])
+  @@index([tenantId, groupId])
+}
+
+model TemplateGroup {
+  id           String           @id @default(uuid())
+  tenantId     String
+  name         String
+  category     TemplateCategory
+  arTemplateId String?
+  enTemplateId String?
+  createdAt    DateTime         @default(now())
+
+  @@unique([tenantId, name])
+}
+
+model Campaign {
+  id              String         @id @default(uuid())
+  tenantId        String
+  segmentId       String
+  name            String
+  channel         String         @default("WHATSAPP")
+  templateId      String
+  templateGroupId String?
+  status          CampaignStatus @default(DRAFT)
+  scheduledAt     DateTime?
+  sentAt          DateTime?
+  promoCodeId     String?
+  utmId           String?
+  totalRecipients Int            @default(0)
+  sentCount       Int            @default(0)
+  deliveredCount  Int            @default(0)
+  readCount       Int            @default(0)
+  replyCount      Int            @default(0)
+  failedCount     Int            @default(0)
+  optOutCount     Int            @default(0)
+  totalCost       Decimal        @default(0) @db.Decimal(12, 4)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([tenantId, status])
+  @@index([tenantId, segmentId])
+}
+
+model Message {
+  id            String            @id @default(uuid())
+  tenantId      String
+  campaignId    String?
+  customerId    String
+  channel       String            @default("WHATSAPP")
+  templateId    String?
+  body          String?
+  status        MessageStatus     @default(QUEUED)
+  metaMessageId String?
+  cost          Decimal           @default(0) @db.Decimal(12, 4)
+  costCategory  TemplateCategory? @default(MARKETING)
+  queuedAt      DateTime          @default(now())
+  sentAt        DateTime?
+  deliveredAt   DateTime?
+  readAt        DateTime?
+  failedAt      DateTime?
+  failureReason String?
+  consentRef    String?
+  retryCount    Int               @default(0)
+
+  @@index([tenantId, campaignId, status])
+  @@index([tenantId, customerId, status])
+}
+
+model PromoCode {
+  id         String   @id @default(uuid())
+  tenantId   String
+  campaignId String?
+  code       String
+  discount   String?
+  shared     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@unique([tenantId, code])
+}
+
+model UtmParameter {
+  id         String   @id @default(uuid())
+  tenantId   String
+  campaignId String
+  source     String
+  medium     String
+  campaign   String
+  content    String?
+  fullUrl    String
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, campaignId])
+}
+
+model WhatsAppCostRate {
+  id       String           @id @default(uuid())
+  country  String
+  category TemplateCategory
+  amount   Decimal          @db.Decimal(12, 4)
+  currency String
+
+  @@unique([country, category])
+}
+
+model ServiceWindow {
+  id         String   @id @default(uuid())
+  tenantId   String
+  customerId String
+  openedAt   DateTime
+  expiresAt  DateTime
+  updatedAt  DateTime @updatedAt
+
+  @@unique([tenantId, customerId])
+  @@index([tenantId, expiresAt])
+}
