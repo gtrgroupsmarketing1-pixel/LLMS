@@ -12,6 +12,7 @@
     "multer": "^1.4.5-lts.1",
     "@lmms/audit": "workspace:*",
     "@lmms/auth": "workspace:*",
+    "@lmms/automations": "workspace:*",
     "@lmms/campaigns": "workspace:*",
     "@lmms/compliance": "workspace:*",
     "@lmms/config": "workspace:*",

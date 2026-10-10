@@ -9,10 +9,12 @@
   },
   "dependencies": {
     "@lmms/audit": "workspace:*",
+    "@lmms/automations": "workspace:*",
     "@lmms/compliance": "workspace:*",
     "@lmms/config": "workspace:*",
     "@lmms/db": "workspace:*",
-    "@lmms/ingestion": "workspace:*"
+    "@lmms/ingestion": "workspace:*",
+    "@lmms/whatsapp": "workspace:*"
   },
   "devDependencies": {
     "tsx": "^4.19.1",
