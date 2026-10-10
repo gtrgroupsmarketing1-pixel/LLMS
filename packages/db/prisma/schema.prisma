@@ -754,3 +754,60 @@ model ClientMessageInbox {
   @@index([tenantId, status])
   @@index([tenantId, customerId])
 }
+
+// === V1.9 Reporting additions ===
+
+enum ReportKind {
+  MONTHLY_PDF
+  WEEKLY_SUMMARY
+  QBR_DECK
+}
+
+enum ReportStatus {
+  PENDING
+  GENERATING
+  READY
+  FAILED
+  DELIVERED
+}
+
+enum ReportChannel {
+  WHATSAPP
+  EMAIL
+  PORTAL
+}
+
+model ReportRecord {
+  id          String       @id @default(uuid())
+  tenantId    String
+  kind        ReportKind
+  periodStart DateTime
+  periodEnd   DateTime
+  status      ReportStatus @default(PENDING)
+  payload     Json?
+  pdfPath     String?
+  generatedAt DateTime?
+  error       String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  deliveries ReportDelivery[]
+
+  @@unique([tenantId, kind, periodStart])
+  @@index([tenantId, status])
+  @@index([tenantId, kind, periodEnd])
+}
+
+model ReportDelivery {
+  id          String        @id @default(uuid())
+  reportId    String
+  tenantId    String
+  channel     ReportChannel
+  deliveredAt DateTime      @default(now())
+  meta        Json?
+
+  report ReportRecord @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, channel])
+  @@index([reportId])
+}
