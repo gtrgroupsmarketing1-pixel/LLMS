@@ -600,3 +600,84 @@ model ConsentOptOutEvent {
 
   @@index([tenantId, customerId, channel])
 }
+
+// === V1.7 Automations additions ===
+
+enum AutomationStatus {
+  ACTIVE
+  PAUSED
+  KILLED
+  DRAFT
+}
+
+enum AutomationMode {
+  ERP_ONLY
+  STANDALONE_ONLY
+  BOTH
+}
+
+enum AutomationRunStatus {
+  ENTERED
+  MESSAGED
+  EXITED
+  SKIPPED
+  FAILED
+}
+
+model Automation {
+  id                String           @id @default(uuid())
+  tenantId          String
+  slug              String
+  name              String
+  nameAr            String?
+  mode              AutomationMode
+  status            AutomationStatus @default(ACTIVE)
+  priority          Int              @default(100)
+  definition        Json
+  templateId        String?
+  segmentId         String?
+  frequencyCapHours Int              @default(24)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, status])
+}
+
+model AutomationRun {
+  id           String              @id @default(uuid())
+  tenantId     String
+  automationId String
+  customerId   String
+  status       AutomationRunStatus @default(ENTERED)
+  enteredAt    DateTime            @default(now())
+  exitedAt     DateTime?
+  exitReason   String?
+  messageId    String?
+  meta         Json?
+
+  @@index([tenantId, automationId, customerId])
+  @@index([tenantId, enteredAt])
+}
+
+model FrequencyLedger {
+  id         String   @id @default(uuid())
+  tenantId   String
+  customerId String
+  lastSendAt DateTime
+  count24h   Int      @default(0)
+
+  @@unique([tenantId, customerId])
+  @@index([tenantId, lastSendAt])
+}
+
+model AutomationKillSwitch {
+  id           String    @id @default(uuid())
+  tenantId     String
+  automationId String
+  killedAt     DateTime  @default(now())
+  killedBy     String
+  reason       String?
+
+  @@unique([tenantId, automationId])
+}
