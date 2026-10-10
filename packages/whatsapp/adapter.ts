@@ -26,10 +26,15 @@ export interface TemplateSubmitResult {
   error?: string;
 }
 
+export interface TemplateStatusResult {
+  status: string;
+  reason?: string;
+}
+
 export interface WhatsAppAdapter {
   validate(): Promise<boolean>;
   submitTemplate(input: TemplateSubmitInput): Promise<TemplateSubmitResult>;
-  getTemplateStatus(metaTemplateId: string): Promise<{ status: string; reason?: string }>;
+  getTemplateStatus(metaTemplateId: string): Promise<TemplateStatusResult>;
   sendTemplate(input: SendTemplateInput): Promise<SendResult>;
 }
 
@@ -44,9 +49,10 @@ export class MockWhatsAppAdapter implements WhatsAppAdapter {
     }
     return { ok: true, metaTemplateId: `mock-tpl-${++this.counter}`, status: 'PENDING' };
   }
-  async getTemplateStatus(metaTemplateId: string) {
+  async getTemplateStatus(metaTemplateId: string): Promise<TemplateStatusResult> {
     return {
       status: metaTemplateId.includes('reject') ? 'REJECTED' : 'APPROVED',
+      reason: metaTemplateId.includes('reject') ? 'mock_rejection' : undefined,
     };
   }
   async sendTemplate(input: SendTemplateInput): Promise<SendResult> {
@@ -94,7 +100,7 @@ export class CloudApiWhatsAppAdapter implements WhatsAppAdapter {
     return { ok: true, metaTemplateId: data.id, status: 'PENDING' };
   }
 
-  async getTemplateStatus(metaTemplateId: string) {
+  async getTemplateStatus(metaTemplateId: string): Promise<TemplateStatusResult> {
     const res = await fetch(`${this.baseUrl}/${metaTemplateId}`, {
       headers: { Authorization: `Bearer ${this.accessToken}` },
     });
