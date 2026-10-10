@@ -58,12 +58,14 @@ export async function generateMonthlyReport(
       mode: tenant.mode as 'ERP_CONNECTED' | 'STANDALONE' | 'UPGRADING',
     });
 
+    const payload = { kpis: filtered, bytes: pdf.length } as never;
+
     await prisma.reportRecord.update({
       where: { id: record.id },
       data: {
         status: 'READY',
         generatedAt: new Date(),
-        payload: { kpis: filtered, bytes: pdf.length },
+        payload,
         pdfPath: null,
       },
     });
@@ -117,6 +119,8 @@ export async function generateWeeklySummary(
     locale: 'ar',
   });
 
+  const payload = { body } as never;
+
   const record = await prisma.reportRecord.upsert({
     where: {
       tenantId_kind_periodStart: {
@@ -125,14 +129,14 @@ export async function generateWeeklySummary(
         periodStart: p.start,
       },
     },
-    update: { status: 'READY', payload: { body }, generatedAt: new Date() },
+    update: { status: 'READY', payload, generatedAt: new Date() },
     create: {
       tenantId,
       kind: 'WEEKLY_SUMMARY',
       periodStart: p.start,
       periodEnd: p.end,
       status: 'READY',
-      payload: { body },
+      payload,
       generatedAt: new Date(),
     },
   });
