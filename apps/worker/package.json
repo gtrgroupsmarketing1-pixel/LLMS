@@ -8,6 +8,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@lmms/audit": "workspace:*",
+    "@lmms/compliance": "workspace:*",
     "@lmms/config": "workspace:*",
     "@lmms/db": "workspace:*",
     "@lmms/ingestion": "workspace:*"

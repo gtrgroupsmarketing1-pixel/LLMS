@@ -94,6 +94,7 @@ export default function TenantDetailPage() {
           <TabsTrigger value="data">Data</TabsTrigger>
           <TabsTrigger value="segments">Segments</TabsTrigger>
           <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
+          <TabsTrigger value="compliance">Compliance</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -167,6 +168,19 @@ export default function TenantDetailPage() {
               <p className="text-sm text-slate-500">
                 <Link href={`/tenants/${tenant.id}/campaigns`} className="underline">
                   Open the campaigns page →
+                </Link>
+              </p>
+            </CardBody>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="compliance">
+          <Card>
+            <CardBody className="space-y-3">
+              <CardTitle>Compliance</CardTitle>
+              <p className="text-sm text-slate-500">
+                <Link href={`/tenants/${tenant.id}/compliance`} className="underline">
+                  Open the compliance dashboard →
                 </Link>
               </p>
             </CardBody>
