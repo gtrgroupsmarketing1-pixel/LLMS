@@ -13,6 +13,7 @@
     "@lmms/audit": "workspace:*",
     "@lmms/auth": "workspace:*",
     "@lmms/campaigns": "workspace:*",
+    "@lmms/compliance": "workspace:*",
     "@lmms/config": "workspace:*",
     "@lmms/contracts": "workspace:*",
     "@lmms/db": "workspace:*",

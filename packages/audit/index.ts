@@ -1,16 +1,13 @@
 import crypto from 'node:crypto';
 import { prisma } from '@lmms/db';
 
-interface AuditEntryInput {
+interface AuditHashInput {
   tenantId: string;
   actor: string;
   action: string;
   entity: string;
-  consentRef?: string;
-}
-
-interface AuditHashInput extends AuditEntryInput {
   timestamp: Date;
+  consentRef?: string;
   prevHash?: string | null;
 }
 
@@ -90,13 +87,15 @@ export async function verifyAuditChain(
   return { valid: true };
 }
 
-export async function exportAuditLog(tenantId: string, since?: Date, until?: Date) {
+export async function exportAuditLog(
+  tenantId: string,
+  since?: Date,
+  until?: Date,
+) {
   return prisma.auditLog.findMany({
     where: {
       tenantId,
-      ...(since || until
-        ? { timestamp: { gte: since, lte: until } }
-        : {}),
+      ...(since || until ? { timestamp: { gte: since, lte: until } } : {}),
     },
     orderBy: { timestamp: 'asc' },
   });
