@@ -7,6 +7,7 @@ import { segmentationRouter } from './routes/segmentation.routes';
 import { campaignRouter } from './routes/campaign.routes';
 import { complianceRouter } from './routes/compliance.routes';
 import { automationRouter } from './routes/automation.routes';
+import { portalRouter } from './routes/portal.routes';
 
 export function createApp() {
   const app = express();
@@ -20,6 +21,7 @@ export function createApp() {
   app.use('/campaigns', campaignRouter);
   app.use('/compliance', complianceRouter);
   app.use('/automations', automationRouter);
+  app.use('/portal', portalRouter);
 
   app.use(errorHandler);
   return app;
