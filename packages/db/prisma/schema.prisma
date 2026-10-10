@@ -527,3 +527,76 @@ model ServiceWindow {
   @@unique([tenantId, customerId])
   @@index([tenantId, expiresAt])
 }
+
+// === V1.6 Compliance additions ===
+
+enum ErasureStatus {
+  REQUESTED
+  IN_REVIEW
+  PROCESSING
+  COMPLETED
+  REJECTED
+}
+
+model ErasureRequest {
+  id          String        @id @default(uuid())
+  tenantId    String
+  customerId  String
+  scope       String
+  status      ErasureStatus @default(REQUESTED)
+  requestedAt DateTime      @default(now())
+  dueAt       DateTime
+  completedAt DateTime?
+  notes       String?
+  auditRef    String?
+
+  @@index([tenantId, status])
+}
+
+model RetentionPolicy {
+  id            String   @id @default(uuid())
+  country       String
+  dataType      String
+  retentionDays Int
+  basis         String
+  updatedAt     DateTime @updatedAt
+
+  @@unique([country, dataType])
+}
+
+model DpaTemplate {
+  id         String    @id @default(uuid())
+  tenantId   String
+  version    Int
+  contentMd  String
+  acceptedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@unique([tenantId, version])
+  @@index([tenantId])
+}
+
+model SmsSenderId {
+  id          String    @id @default(uuid())
+  tenantId    String
+  country     String
+  senderId    String
+  regulator   String
+  status      String    @default("PENDING")
+  submittedAt DateTime  @default(now())
+  approvedAt  DateTime?
+
+  @@unique([tenantId, country, senderId])
+}
+
+model ConsentOptOutEvent {
+  id           String         @id @default(uuid())
+  tenantId     String
+  customerId   String
+  channel      ConsentChannel
+  source       String
+  processedAt  DateTime       @default(now())
+  propagatedAt DateTime?
+
+  @@index([tenantId, customerId, channel])
+}

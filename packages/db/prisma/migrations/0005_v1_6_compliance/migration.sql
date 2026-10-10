@@ -1,0 +1,2 @@
+-- TODO: regenerate in Codespaces with:
+--   pnpm --filter @lmms/db exec prisma migrate dev --name v1_6_compliance
