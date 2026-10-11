@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Badge, Button, Card, CardBody, CardTitle, Skeleton } from '@lmms/ui';
+import { Button, Card, CardBody, CardTitle, Skeleton } from '@lmms/ui';
 import { authedFetch } from '../../lib/portal/session';
 
 interface DashboardData {
@@ -30,24 +30,16 @@ export default function PortalDashboard() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    authedFetch('/api/portal/dashboard')
-      .then(async (r) => {
-        if (!r.ok) {
-          setError(`Failed: ${r.status}`);
-          return;
-        }
-        setData((await r.json()) as DashboardData);
+    Promise.all([
+      authedFetch('/api/portal/dashboard').then((r) => (r.ok ? r.json() : null)),
+      authedFetch('/api/portal/upgrade-prompt').then((r) => (r.ok ? r.json() : null)),
+    ])
+      .then(([d, u]) => {
+        if (d) setData(d as DashboardData);
+        else setError('Could not load dashboard');
+        if (u) setUpgrade(u as UpgradePrompt);
       })
       .catch(() => setError('Network error'));
-
-    authedFetch('/api/portal/upgrade-prompt')
-      .then(async (r) => {
-        if (!r.ok) return;
-        setUpgrade((await r.json()) as UpgradePrompt);
-      })
-      .catch(() => {
-        // ignore
-      });
   }, []);
 
   async function dismiss() {
@@ -90,9 +82,7 @@ export default function PortalDashboard() {
 
       <div
         className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs ${
-          fresh
-            ? 'bg-emerald-100 text-emerald-800'
-            : 'bg-amber-100 text-amber-800'
+          fresh ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
         }`}
       >
         <span>{fresh ? '🟢' : '🟡'}</span>
@@ -168,9 +158,7 @@ function MetricCard({
     <Link
       href={href}
       className={`block rounded-lg border p-4 no-underline ${
-        tone === 'warn'
-          ? 'bg-amber-50 border-amber-200'
-          : 'bg-white border-slate-200'
+        tone === 'warn' ? 'bg-amber-50 border-amber-200' : 'bg-white border-slate-200'
       }`}
     >
       <div className="text-2xl font-bold text-slate-900">{value}</div>
