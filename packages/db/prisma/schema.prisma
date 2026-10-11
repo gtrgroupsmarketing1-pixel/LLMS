@@ -811,3 +811,117 @@ model ReportDelivery {
   @@index([tenantId, channel])
   @@index([reportId])
 }
+
+// === V1.10 Content Calendar additions ===
+
+enum ContentChannel {
+  WHATSAPP
+  SMS
+  EMAIL
+  INSTAGRAM
+  FACEBOOK
+  GOOGLE_BUSINESS
+  PRINT
+  IN_STORE
+}
+
+enum ContentCardStatus {
+  DRAFT
+  INTERNAL_REVIEW
+  CLIENT_REVIEW
+  APPROVED
+  SCHEDULED
+  LIVE
+  COMPLETED
+  REJECTED
+}
+
+model ContentCard {
+  id              String            @id @default(uuid())
+  tenantId        String
+  title           String
+  brief           String?
+  copyAr          String?
+  copyEn          String?
+  channel         ContentChannel
+  scheduledAt     DateTime?
+  publishedAt     DateTime?
+  ownerId         String?
+  status          ContentCardStatus @default(DRAFT)
+  currentVersion  Int               @default(1)
+  rejectionReason String?
+  createdBy       String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  versions  ContentCardVersion[]
+  comments  ContentCardComment[]
+  approvals ContentApprovalLink[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, scheduledAt])
+  @@index([tenantId, channel])
+}
+
+model ContentCardVersion {
+  id         String   @id @default(uuid())
+  cardId     String
+  tenantId   String
+  version    Int
+  snapshot   Json
+  changedBy  String
+  changedAt  DateTime @default(now())
+  changeNote String?
+
+  card ContentCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@unique([cardId, version])
+  @@index([tenantId])
+}
+
+model ContentCardComment {
+  id         String   @id @default(uuid())
+  cardId     String
+  tenantId   String
+  authorId   String
+  authorKind String
+  body       String
+  createdAt  DateTime @default(now())
+
+  card ContentCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId, createdAt])
+  @@index([tenantId])
+}
+
+model ContentApprovalLink {
+  id        String    @id @default(uuid())
+  cardId    String
+  tenantId  String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  decision  String?
+  reason    String?
+  createdAt DateTime  @default(now())
+
+  card ContentCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, cardId])
+  @@index([expiresAt])
+}
+
+model GccTemplate {
+  id              String         @id @default(uuid())
+  slug            String         @unique
+  titleEn         String
+  titleAr         String
+  occasion        String
+  country         String?
+  channel         ContentChannel
+  briefEn         String
+  briefAr         String
+  suggestedCopyEn String
+  suggestedCopyAr String
+  active          Boolean        @default(true)
+}
