@@ -95,6 +95,7 @@ export default function TenantDetailPage() {
           <TabsTrigger value="segments">Segments</TabsTrigger>
           <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
           <TabsTrigger value="automations">Automations</TabsTrigger>
+          <TabsTrigger value="calendar">Calendar</TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
         </TabsList>
 
@@ -182,6 +183,19 @@ export default function TenantDetailPage() {
               <p className="text-sm text-slate-500">
                 <Link href={`/tenants/${tenant.id}/automations`} className="underline">
                   Open the automations page →
+                </Link>
+              </p>
+            </CardBody>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="calendar">
+          <Card>
+            <CardBody className="space-y-3">
+              <CardTitle>Content Calendar</CardTitle>
+              <p className="text-sm text-slate-500">
+                <Link href={`/tenants/${tenant.id}/calendar`} className="underline">
+                  Open the calendar page →
                 </Link>
               </p>
             </CardBody>

@@ -12,6 +12,7 @@
     "@lmms/automations": "workspace:*",
     "@lmms/compliance": "workspace:*",
     "@lmms/config": "workspace:*",
+    "@lmms/content-calendar": "workspace:*",
     "@lmms/db": "workspace:*",
     "@lmms/ingestion": "workspace:*",
     "@lmms/reporting": "workspace:*",

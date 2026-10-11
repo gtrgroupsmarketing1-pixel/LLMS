@@ -9,6 +9,7 @@ import { complianceRouter } from './routes/compliance.routes';
 import { automationRouter } from './routes/automation.routes';
 import { portalRouter } from './routes/portal.routes';
 import { reportingRouter } from './routes/reporting.routes';
+import { contentCalendarRouter } from './routes/content-calendar.routes';
 
 export function createApp() {
   const app = express();
@@ -24,6 +25,7 @@ export function createApp() {
   app.use('/automations', automationRouter);
   app.use('/portal', portalRouter);
   app.use('/reporting', reportingRouter);
+  app.use('/content-calendar', contentCalendarRouter);
 
   app.use(errorHandler);
   return app;

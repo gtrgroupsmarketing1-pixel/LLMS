@@ -16,6 +16,7 @@
     "@lmms/campaigns": "workspace:*",
     "@lmms/compliance": "workspace:*",
     "@lmms/config": "workspace:*",
+    "@lmms/content-calendar": "workspace:*",
     "@lmms/contracts": "workspace:*",
     "@lmms/db": "workspace:*",
     "@lmms/ingestion": "workspace:*",
