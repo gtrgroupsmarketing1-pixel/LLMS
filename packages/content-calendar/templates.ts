@@ -1,0 +1,191 @@
+export interface TemplateSeed {
+  slug: string;
+  titleEn: string;
+  titleAr: string;
+  occasion: string;
+  country: string | null;
+  channel:
+    | 'WHATSAPP'
+    | 'SMS'
+    | 'EMAIL'
+    | 'INSTAGRAM'
+    | 'FACEBOOK'
+    | 'GOOGLE_BUSINESS'
+    | 'PRINT'
+    | 'IN_STORE';
+  briefEn: string;
+  briefAr: string;
+  suggestedCopyEn: string;
+  suggestedCopyAr: string;
+}
+
+export const GCC_TEMPLATE_LIBRARY: TemplateSeed[] = [
+  {
+    slug: 'ramadan_pre_cleaning',
+    titleEn: 'Pre-Ramadan Deep Clean',
+    titleAr: 'تنظيف عميق قبل رمضان',
+    occasion: 'RAMADAN',
+    country: null,
+    channel: 'WHATSAPP',
+    briefEn: 'Drive pre-Ramadan cleaning bookings 10 days before start.',
+    briefAr: 'تحفيز حجوزات التنظيف قبل رمضان بعشرة أيام.',
+    suggestedCopyEn: '{{first_name}}, get your home ready for Ramadan. Book now and save 20%.',
+    suggestedCopyAr: '{{first_name}}، جهّز منزلك لرمضان. احجز الآن ووفّر ٢٠٪.',
+  },
+  {
+    slug: 'ramadan_iftar_timing',
+    titleEn: 'Iftar Delivery Timing',
+    titleAr: 'توقيت التسليم قبل الإفطار',
+    occasion: 'RAMADAN',
+    country: null,
+    channel: 'SMS',
+    briefEn: 'Remind customers of same-day delivery before Iftar.',
+    briefAr: 'تذكير العملاء بالتسليم في نفس اليوم قبل الإفطار.',
+    suggestedCopyEn: 'Order before 2 PM for Iftar-ready delivery. Reply STOP to opt out.',
+    suggestedCopyAr: 'اطلب قبل الساعة ٢ ظهراً للتسليم قبل الإفطار. أرسل إلغاء لإيقاف الرسائل.',
+  },
+  {
+    slug: 'eid_al_fitr_refresh',
+    titleEn: 'Post-Ramadan Refresh',
+    titleAr: 'تجديد ما بعد رمضان',
+    occasion: 'EID_AL_FITR',
+    country: null,
+    channel: 'WHATSAPP',
+    briefEn: 'Post-Eid refresh offer for home and family gatherings.',
+    briefAr: 'عرض تجديد المنزل بعد العيد.',
+    suggestedCopyEn: 'Eid Mubarak {{first_name}}! Refresh your home with 25% off this week.',
+    suggestedCopyAr: 'عيد مبارك {{first_name}}! جدّد منزلك بخصم ٢٥٪ هذا الأسبوع.',
+  },
+  {
+    slug: 'eid_al_adha_travel',
+    titleEn: 'Pre-Eid Travel Preparation',
+    titleAr: 'تحضير السفر قبل عيد الأضحى',
+    occasion: 'EID_AL_ADHA',
+    country: null,
+    channel: 'WHATSAPP',
+    briefEn: 'Pre-travel cleaning and wardrobe refresh before Eid Al Adha.',
+    briefAr: 'تنظيف ما قبل السفر وتجديد الملابس قبل عيد الأضحى.',
+    suggestedCopyEn: 'Travelling for Eid? We will have your clothes ready before you leave.',
+    suggestedCopyAr: 'مسافر في العيد؟ ملابسك ستكون جاهزة قبل سفرك.',
+  },
+  {
+    slug: 'uae_national_day',
+    titleEn: 'UAE National Day',
+    titleAr: 'اليوم الوطني الإماراتي',
+    occasion: 'NATIONAL_DAY_AE',
+    country: 'AE',
+    channel: 'INSTAGRAM',
+    briefEn: 'Patriotic offer aligned with UAE National Day (Dec 2).',
+    briefAr: 'عرض خاص بمناسبة اليوم الوطني الإماراتي (٢ ديسمبر).',
+    suggestedCopyEn: 'Celebrate the UAE with us — 30% off all services on Dec 2.',
+    suggestedCopyAr: 'احتفل معنا باليوم الوطني — خصم ٣٠٪ على جميع الخدمات في ٢ ديسمبر.',
+  },
+  {
+    slug: 'saudi_national_day',
+    titleEn: 'Saudi National Day',
+    titleAr: 'اليوم الوطني السعودي',
+    occasion: 'NATIONAL_DAY_SA',
+    country: 'SA',
+    channel: 'INSTAGRAM',
+    briefEn: 'Saudi National Day (Sep 23) patriotic offer.',
+    briefAr: 'عرض بمناسبة اليوم الوطني السعودي (٢٣ سبتمبر).',
+    suggestedCopyEn: 'Proud to serve Saudi — special National Day offer inside.',
+    suggestedCopyAr: 'فخورون بخدمة السعودية — عرض اليوم الوطني بالداخل.',
+  },
+  {
+    slug: 'kuwait_national_day',
+    titleEn: 'Kuwait National Day',
+    titleAr: 'اليوم الوطني الكويتي',
+    occasion: 'NATIONAL_DAY_KW',
+    country: 'KW',
+    channel: 'INSTAGRAM',
+    briefEn: 'Kuwait National Day (Feb 25).',
+    briefAr: 'اليوم الوطني الكويتي (٢٥ فبراير).',
+    suggestedCopyEn: 'Happy National Day Kuwait! Enjoy 25% off this week.',
+    suggestedCopyAr: 'عيد وطني سعيد الكويت! خصم ٢٥٪ هذا الأسبوع.',
+  },
+  {
+    slug: 'oman_national_day',
+    titleEn: 'Oman National Day',
+    titleAr: 'اليوم الوطني العماني',
+    occasion: 'NATIONAL_DAY_OM',
+    country: 'OM',
+    channel: 'INSTAGRAM',
+    briefEn: 'Oman National Day (Nov 18).',
+    briefAr: 'اليوم الوطني العماني (١٨ نوفمبر).',
+    suggestedCopyEn: 'Celebrating Oman today and every day. Special offer inside.',
+    suggestedCopyAr: 'نحتفل بعُمان اليوم وكل يوم. عرض خاص بالداخل.',
+  },
+  {
+    slug: 'bahrain_national_day',
+    titleEn: 'Bahrain National Day',
+    titleAr: 'اليوم الوطني البحريني',
+    occasion: 'NATIONAL_DAY_BH',
+    country: 'BH',
+    channel: 'INSTAGRAM',
+    briefEn: 'Bahrain National Day (Dec 16).',
+    briefAr: 'اليوم الوطني البحريني (١٦ ديسمبر).',
+    suggestedCopyEn: 'Happy National Day Bahrain! Enjoy 20% off all services.',
+    suggestedCopyAr: 'عيد وطني سعيد البحرين! خصم ٢٠٪ على جميع الخدمات.',
+  },
+  {
+    slug: 'qatar_national_day',
+    titleEn: 'Qatar National Day',
+    titleAr: 'اليوم الوطني القطري',
+    occasion: 'NATIONAL_DAY_QA',
+    country: 'QA',
+    channel: 'INSTAGRAM',
+    briefEn: 'Qatar National Day (Dec 18).',
+    briefAr: 'اليوم الوطني القطري (١٨ ديسمبر).',
+    suggestedCopyEn: 'Celebrating Qatar! Free pickup on National Day.',
+    suggestedCopyAr: 'نحتفل بقطر! استلام مجاني في اليوم الوطني.',
+  },
+  {
+    slug: 'back_to_school',
+    titleEn: 'Back to School Uniforms',
+    titleAr: 'زي العودة للمدارس',
+    occasion: 'BACK_TO_SCHOOL',
+    country: null,
+    channel: 'WHATSAPP',
+    briefEn: 'Uniform cleaning + family packages before school year.',
+    briefAr: 'تنظيف الزي + باقات عائلية قبل بداية العام الدراسي.',
+    suggestedCopyEn: 'School is back. Get uniforms fresh — 3 for the price of 2.',
+    suggestedCopyAr: 'المدارس عادت. جهّز الزي — ٣ بسعر ٢.',
+  },
+  {
+    slug: 'summer_travel_storage',
+    titleEn: 'Summer Travel & Storage',
+    titleAr: 'الصيف والسفر والتخزين',
+    occasion: 'SUMMER',
+    country: null,
+    channel: 'WHATSAPP',
+    briefEn: 'Pre-travel cleaning + storage promotion (June–August).',
+    briefAr: 'عرض تنظيف ما قبل السفر والتخزين (يونيو–أغسطس).',
+    suggestedCopyEn: 'Going away this summer? Store your winter wardrobe with us.',
+    suggestedCopyAr: 'مسافر هذا الصيف؟ خزّن ملابس الشتاء معنا.',
+  },
+  {
+    slug: 'mothers_day_gcc',
+    titleEn: "Mother's Day (GCC)",
+    titleAr: 'عيد الأم (الخليج)',
+    occasion: 'MOTHERS_DAY',
+    country: null,
+    channel: 'INSTAGRAM',
+    briefEn: "Gift a cleaning package for Mother's Day (Mar 21).",
+    briefAr: 'أهدِ باقة تنظيف في عيد الأم (٢١ مارس).',
+    suggestedCopyEn: 'Give Mom a break — gift a home cleaning package.',
+    suggestedCopyAr: 'امنح أمك راحة — أهدِها باقة تنظيف منزلي.',
+  },
+  {
+    slug: 'new_year_fresh_start',
+    titleEn: 'New Year Fresh Start',
+    titleAr: 'بداية جديدة للعام الجديد',
+    occasion: 'NEW_YEAR',
+    country: null,
+    channel: 'WHATSAPP',
+    briefEn: 'Start the year with a fresh clean (Jan 1).',
+    briefAr: 'ابدأ العام بنظافة جديدة (١ يناير).',
+    suggestedCopyEn: 'New year, fresh start. First order 30% off.',
+    suggestedCopyAr: 'عام جديد، بداية جديدة. خصم ٣٠٪ على أول طلب.',
+  },
+];
