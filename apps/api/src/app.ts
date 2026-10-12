@@ -14,6 +14,7 @@ import { portalRouter } from './routes/portal.routes';
 import { reportingRouter } from './routes/reporting.routes';
 import { contentCalendarRouter } from './routes/content-calendar.routes';
 import { migrationRouter } from './routes/migration.routes';
+import { journeyRouter } from './routes/journey.routes';
 
 export function createApp() {
   const app = express();
@@ -34,6 +35,7 @@ export function createApp() {
   app.use('/reporting', tenantScopeGuard, reportingRouter);
   app.use('/content-calendar', contentCalendarRouter);
   app.use('/migration', tenantScopeGuard, migrationRouter);
+  app.use('/journeys', tenantScopeGuard, journeyRouter);
 
   app.use(errorHandler);
   return app;
