@@ -10,6 +10,8 @@ import { weeklySummaryJob } from './jobs/weekly-summary';
 import { contentPublishJob } from './jobs/content-publish';
 import { approvalLinkSweeperJob } from './jobs/approval-link-sweeper';
 import { migrationWatchdogJob } from './jobs/migration-watchdog';
+import { journeyRunnerJob } from './jobs/journey-runner';
+import { journeyKillEnforcerJob } from './jobs/journey-kill-enforcer';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 const SIX_HOURS = 6 * 60 * 60 * 1000;
@@ -36,6 +38,8 @@ async function killTick() { await safe('kill-switch-enforcer', killSwitchEnforce
 async function contentTick() { await safe('content-publish', contentPublishJob); }
 async function approvalSweepTick() { await safe('approval-link-sweeper', approvalLinkSweeperJob); }
 async function migrationWatchdogTick() { await safe('migration-watchdog', migrationWatchdogJob); }
+async function journeyTick() { await safe('journey-runner', journeyRunnerJob); }
+async function journeyKillTick() { await safe('journey-kill-enforcer', journeyKillEnforcerJob); }
 
 async function monthlyGuard() {
   const now = new Date();
@@ -62,6 +66,8 @@ void killTick();
 void contentTick();
 void approvalSweepTick();
 void migrationWatchdogTick();
+void journeyTick();
+void journeyKillTick();
 
 setInterval(() => void healthTick(), ONE_DAY);
 setInterval(() => void erpTick(), SIX_HOURS);
@@ -73,5 +79,7 @@ setInterval(() => void killTick(), ONE_MIN);
 setInterval(() => void contentTick(), ONE_MIN);
 setInterval(() => void approvalSweepTick(), ONE_HOUR);
 setInterval(() => void migrationWatchdogTick(), ONE_HOUR);
+setInterval(() => void journeyTick(), ONE_MIN);
+setInterval(() => void journeyKillTick(), ONE_MIN);
 setInterval(() => void monthlyGuard(), ONE_HOUR);
 setInterval(() => void weeklyGuard(), ONE_HOUR);
