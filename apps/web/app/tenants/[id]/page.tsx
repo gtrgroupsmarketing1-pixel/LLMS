@@ -97,6 +97,7 @@ export default function TenantDetailPage() {
           <TabsTrigger value="automations">Automations</TabsTrigger>
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
+          <TabsTrigger value="migration">Migration</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -209,6 +210,19 @@ export default function TenantDetailPage() {
               <p className="text-sm text-slate-500">
                 <Link href={`/tenants/${tenant.id}/compliance`} className="underline">
                   Open the compliance dashboard →
+                </Link>
+              </p>
+            </CardBody>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="migration">
+          <Card>
+            <CardBody className="space-y-3">
+              <CardTitle>Migration to ERP</CardTitle>
+              <p className="text-sm text-slate-500">
+                <Link href={`/tenants/${tenant.id}/migration`} className="underline">
+                  Open the migration page →
                 </Link>
               </p>
             </CardBody>

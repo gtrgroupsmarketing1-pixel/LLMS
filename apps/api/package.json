@@ -20,6 +20,7 @@
     "@lmms/contracts": "workspace:*",
     "@lmms/db": "workspace:*",
     "@lmms/ingestion": "workspace:*",
+    "@lmms/migration": "workspace:*",
     "@lmms/reporting": "workspace:*",
     "@lmms/segmentation": "workspace:*",
     "@lmms/whatsapp": "workspace:*"

@@ -15,6 +15,7 @@
     "@lmms/content-calendar": "workspace:*",
     "@lmms/db": "workspace:*",
     "@lmms/ingestion": "workspace:*",
+    "@lmms/migration": "workspace:*",
     "@lmms/reporting": "workspace:*",
     "@lmms/whatsapp": "workspace:*"
   },
