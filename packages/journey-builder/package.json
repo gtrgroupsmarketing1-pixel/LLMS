@@ -1,0 +1,21 @@
+{
+  "name": "@lmms/journey-builder",
+  "version": "0.0.1",
+  "private": true,
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": { "typecheck": "tsc --noEmit" },
+  "dependencies": {
+    "zod": "^3.23.8",
+    "@lmms/db": "workspace:*",
+    "@lmms/audit": "workspace:*",
+    "@lmms/compliance": "workspace:*",
+    "@lmms/whatsapp": "workspace:*",
+    "@lmms/segmentation": "workspace:*",
+    "@lmms/automations": "workspace:*",
+    "@lmms/config": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
