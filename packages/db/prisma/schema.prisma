@@ -925,3 +925,77 @@ model GccTemplate {
   suggestedCopyAr String
   active          Boolean        @default(true)
 }
+
+// === V1.11 Migration additions ===
+
+enum MigrationStatus {
+  INITIATED
+  MATCHING
+  AWAITING_REVIEW
+  BACKFILLING
+  COMPLETED
+  FAILED
+  ROLLED_BACK
+}
+
+enum MatchStatus {
+  MATCHED_PHONE
+  MATCHED_EMAIL
+  MATCHED_MANUAL
+  UNMATCHED
+  AMBIGUOUS
+}
+
+model MigrationJob {
+  id            String          @id @default(uuid())
+  tenantId      String
+  fromMode      String
+  toMode        String
+  status        MigrationStatus @default(INITIATED)
+  actorId       String
+  startedAt     DateTime        @default(now())
+  completedAt   DateTime?
+  rolledBackAt  DateTime?
+  preSnapshot   Json?
+  matchSummary  Json?
+  backfillStats Json?
+  error         String?
+
+  matches MigrationMatch[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, startedAt])
+}
+
+model MigrationMatch {
+  id             String      @id @default(uuid())
+  jobId          String
+  tenantId       String
+  lmmsCustomerId String
+  erpExternalId  String?
+  status         MatchStatus
+  confidence     Int         @default(0)
+  resolvedBy     String?
+  resolvedAt     DateTime?
+  notes          String?
+  createdAt      DateTime    @default(now())
+
+  job MigrationJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, lmmsCustomerId])
+  @@index([jobId, status])
+  @@index([tenantId])
+}
+
+model MigrationEvent {
+  id        String   @id @default(uuid())
+  jobId     String
+  tenantId  String
+  step      String
+  message   String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([jobId, createdAt])
+  @@index([tenantId])
+}
