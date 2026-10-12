@@ -90,8 +90,12 @@ export async function draftResponse(input: DraftResponseInput) {
   }
 
   const topics = Array.isArray(review.topics) ? (review.topics as string[]) : [];
-  const sentiment = review.sentiment as 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE';
-  const body = input.body ?? pickTemplate(topics, sentiment === 'UNKNOWN' ? 'NEUTRAL' : sentiment, input.language);
+  const rawSentiment = review.sentiment as string;
+  const sentiment: 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE' =
+    rawSentiment === 'POSITIVE' || rawSentiment === 'NEGATIVE'
+      ? rawSentiment
+      : 'NEUTRAL';
+  const body = input.body ?? pickTemplate(topics, sentiment, input.language);
 
   const response = await prisma.reviewResponse.create({
     data: {
