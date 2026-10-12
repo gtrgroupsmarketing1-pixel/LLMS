@@ -999,3 +999,118 @@ model MigrationEvent {
   @@index([jobId, createdAt])
   @@index([tenantId])
 }
+
+// === V2.2 Full Journey Builder additions ===
+
+enum JourneyStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum JourneyRunStatus {
+  ENTERED
+  RUNNING
+  MESSAGED
+  COMPLETED
+  EXITED
+  FAILED
+}
+
+enum JourneyNodeType {
+  TRIGGER
+  WAIT
+  CONDITION
+  SEND
+  SPLIT
+  END
+}
+
+model Journey {
+  id                String        @id @default(uuid())
+  tenantId          String
+  name              String
+  nameAr            String?
+  status            JourneyStatus @default(DRAFT)
+  priority          Int           @default(100)
+  frequencyCapHours Int           @default(24)
+  definition        Json
+  currentVersion    Int           @default(1)
+  createdBy         String
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  versions     JourneyVersion[]
+  runs         JourneyRun[]
+  killSwitches JourneyKillSwitch[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId, status])
+}
+
+model JourneyVersion {
+  id         String   @id @default(uuid())
+  journeyId  String
+  tenantId   String
+  version    Int
+  snapshot   Json
+  changedBy  String
+  changeNote String?
+  changedAt  DateTime @default(now())
+
+  journey Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@unique([journeyId, version])
+  @@index([tenantId])
+}
+
+model JourneyRun {
+  id         String           @id @default(uuid())
+  tenantId   String
+  journeyId  String
+  customerId String
+  status     JourneyRunStatus @default(ENTERED)
+  enteredAt  DateTime         @default(now())
+  exitedAt   DateTime?
+  exitReason String?
+  currentNodeId String?
+  meta       Json?
+
+  journey Journey       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  steps   JourneyStep[]
+
+  @@index([tenantId, journeyId, customerId])
+  @@index([tenantId, enteredAt])
+  @@index([tenantId, status])
+}
+
+model JourneyStep {
+  id        String   @id @default(uuid())
+  runId     String
+  tenantId  String
+  nodeId    String
+  nodeType  JourneyNodeType
+  enteredAt DateTime @default(now())
+  exitedAt  DateTime?
+  outcome   String?
+  meta      Json?
+
+  run JourneyRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId, enteredAt])
+  @@index([tenantId])
+}
+
+model JourneyKillSwitch {
+  id        String   @id @default(uuid())
+  tenantId  String
+  journeyId String
+  killedAt  DateTime @default(now())
+  killedBy  String
+  reason    String?
+
+  journey Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, journeyId])
+}
