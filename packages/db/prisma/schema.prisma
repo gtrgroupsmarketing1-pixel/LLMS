@@ -1229,3 +1229,135 @@ model BrandProject {
 
   @@index([tenantId])
 }
+
+// === V2.5 Reviews & Local Listings additions ===
+
+enum ReviewPlatform {
+  GOOGLE_BUSINESS
+  FACEBOOK
+  TRIPADVISOR
+  YELP
+  TRUSTPILOT
+  OTHER
+}
+
+enum ReviewSentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+  UNKNOWN
+}
+
+enum ReviewTopic {
+  SERVICE_QUALITY
+  TIMELINESS
+  PRICE
+  STAFF
+  CLEANLINESS
+  LOCATION
+  PACKAGING
+  OTHER
+}
+
+enum ReviewResponseStatus {
+  PENDING
+  DRAFTED
+  APPROVED
+  POSTED
+  REJECTED
+}
+
+enum DirectoryCountry {
+  AE
+  SA
+  KW
+  QA
+  BH
+  OM
+}
+
+model Review {
+  id              String          @id @default(uuid())
+  tenantId        String
+  locationId      String?
+  platform        ReviewPlatform
+  externalId      String
+  authorName      String?
+  rating          Int
+  text            String?
+  language        String?
+  sentiment       ReviewSentiment @default(UNKNOWN)
+  topics          Json?
+  responded       Boolean         @default(false)
+  respondedAt     DateTime?
+  escalated       Boolean         @default(false)
+  escalatedAt     DateTime?
+  reviewedAt      DateTime
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  responses ReviewResponse[]
+
+  @@unique([tenantId, platform, externalId])
+  @@index([tenantId, sentiment])
+  @@index([tenantId, responded])
+  @@index([tenantId, reviewedAt])
+  @@index([tenantId, escalated])
+}
+
+model ReviewResponse {
+  id           String                @id @default(uuid())
+  tenantId     String
+  reviewId     String
+  language     String
+  body         String
+  status       ReviewResponseStatus  @default(PENDING)
+  draftedBy    String?
+  approvedBy   String?
+  approvedAt   DateTime?
+  postedAt     DateTime?
+  postedExtern String?
+  rejectionReason String?
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, reviewId])
+  @@index([tenantId, status])
+}
+
+model DirectoryListing {
+  id             String           @id @default(uuid())
+  tenantId       String
+  country        DirectoryCountry
+  platformName   String
+  platformUrl    String?
+  status         String           @default("NOT_SUBMITTED")
+  submittedAt    DateTime?
+  verifiedAt     DateTime?
+  rejectionReason String?
+  notes          String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@unique([tenantId, country, platformName])
+  @@index([tenantId, country])
+}
+
+model GbpInsight {
+  id             String   @id @default(uuid())
+  tenantId       String
+  locationId     String?
+  date           DateTime
+  searchViews    Int      @default(0)
+  mapViews       Int      @default(0)
+  calls          Int      @default(0)
+  directionReqs  Int      @default(0)
+  websiteClicks  Int      @default(0)
+  bookings       Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@unique([tenantId, locationId, date])
+  @@index([tenantId, date])
+}
