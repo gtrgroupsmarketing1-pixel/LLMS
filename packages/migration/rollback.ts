@@ -50,7 +50,7 @@ export async function restoreFromSnapshot(
 ): Promise<void> {
   await prisma.tenant.update({
     where: { id: tenantId },
-    data: { mode: snapshot.tenant.mode },
+    data: { mode: snapshot.tenant.mode as never },
   });
 
   for (const ds of snapshot.dataSources) {
