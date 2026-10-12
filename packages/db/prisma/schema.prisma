@@ -1114,3 +1114,27 @@ model JourneyKillSwitch {
 
   @@unique([tenantId, journeyId])
 }
+
+// === V2.3 Content Approval additions ===
+
+enum ContentNotificationKind {
+  APPROVAL_REQUEST
+  APPROVAL_REMINDER
+  REJECTION_NOTICE
+  APPROVAL_CONFIRMED
+}
+
+model ContentNotification {
+  id        String                  @id @default(uuid())
+  tenantId  String
+  cardId    String
+  channel   String                  @default("WHATSAPP")
+  kind      ContentNotificationKind
+  sentTo    String?
+  sentAt    DateTime                @default(now())
+  status    String                  @default("SENT")
+  meta      Json?
+
+  @@index([tenantId, cardId])
+  @@index([tenantId, kind, sentAt])
+}

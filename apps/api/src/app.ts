@@ -13,6 +13,8 @@ import { automationRouter } from './routes/automation.routes';
 import { portalRouter } from './routes/portal.routes';
 import { reportingRouter } from './routes/reporting.routes';
 import { contentCalendarRouter } from './routes/content-calendar.routes';
+import { contentNotificationRouter } from './routes/content-notification.routes';
+import { contentPortalV2Router } from './routes/content-portal-v2.routes';
 import { migrationRouter } from './routes/migration.routes';
 import { journeyRouter } from './routes/journey.routes';
 
@@ -34,6 +36,8 @@ export function createApp() {
   app.use('/portal', portalRouter);
   app.use('/reporting', tenantScopeGuard, reportingRouter);
   app.use('/content-calendar', contentCalendarRouter);
+  app.use('/content-notifications', contentNotificationRouter);
+  app.use('/content-portal', contentPortalV2Router);
   app.use('/migration', tenantScopeGuard, migrationRouter);
   app.use('/journeys', tenantScopeGuard, journeyRouter);
 
