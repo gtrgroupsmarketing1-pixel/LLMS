@@ -1138,3 +1138,94 @@ model ContentNotification {
   @@index([tenantId, cardId])
   @@index([tenantId, kind, sentAt])
 }
+
+// === V2.4 Brand & Asset Hub additions ===
+
+enum AssetCategory {
+  LOGO
+  COLOR_PALETTE
+  FONT
+  IMAGE
+  VIDEO
+  TEMPLATE
+  SIGNAGE
+  VEHICLE_WRAP
+  UNIFORM
+  PACKAGING
+  FLYER
+  LOYALTY_CARD
+  PRICE_LIST
+  OTHER
+}
+
+enum AssetUsageRights {
+  PERPETUAL
+  TIME_LIMITED
+  LOCATION_LIMITED
+  UNKNOWN
+}
+
+enum BrandKitStatus {
+  DRAFT
+  CLIENT_REVIEW
+  APPROVED
+  ARCHIVED
+}
+
+model BrandKit {
+  id              String         @id @default(uuid())
+  tenantId        String
+  tagline         String?
+  taglineAr       String?
+  tone            String?
+  toneAr          String?
+  logoVariants    Json?
+  colors          Json?
+  fonts           Json?
+  status          BrandKitStatus @default(DRAFT)
+  approvedAt      DateTime?
+  createdBy       String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@unique([tenantId])
+  @@index([tenantId, status])
+}
+
+model Asset {
+  id               String           @id @default(uuid())
+  tenantId         String
+  brandKitId       String?
+  category         AssetCategory
+  name             String
+  nameAr           String?
+  fileUrl          String
+  fileMime         String?
+  fileSizeBytes    Int?
+  fileWidth        Int?
+  fileHeight       Int?
+  tags             Json?
+  usageRights      AssetUsageRights @default(UNKNOWN)
+  usageRightsNotes String?
+  usageExpiresAt   DateTime?
+  uploadedBy       String
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@index([tenantId, category])
+  @@index([tenantId, usageExpiresAt])
+}
+
+model BrandProject {
+  id            String   @id @default(uuid())
+  tenantId      String
+  name          String
+  milestones    Json
+  currentStage  String   @default("KICKOFF")
+  signedOffAt   DateTime?
+  signedOffBy   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([tenantId])
+}
