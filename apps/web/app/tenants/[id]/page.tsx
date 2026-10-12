@@ -98,6 +98,7 @@ export default function TenantDetailPage() {
           <TabsTrigger value="automations">Automations</TabsTrigger>
           <TabsTrigger value="journeys">Journeys</TabsTrigger>
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
+          <TabsTrigger value="reviews">Reviews</TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
           <TabsTrigger value="migration">Migration</TabsTrigger>
         </TabsList>
@@ -166,6 +167,10 @@ export default function TenantDetailPage() {
 
         <TabsContent value="calendar">
           <Card><CardBody><CardTitle>Content Calendar</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/calendar`} className="underline">Open the calendar page →</Link></p></CardBody></Card>
+        </TabsContent>
+
+        <TabsContent value="reviews">
+          <Card><CardBody><CardTitle>Reviews</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/reviews`} className="underline">Open the reviews inbox →</Link></p><p className="text-sm text-slate-500 mt-1"><Link href={`/tenants/${tenant.id}/directory`} className="underline">Open directory listings →</Link></p></CardBody></Card>
         </TabsContent>
 
         <TabsContent value="compliance">

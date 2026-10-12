@@ -18,6 +18,7 @@
     "@lmms/journey-builder": "workspace:*",
     "@lmms/migration": "workspace:*",
     "@lmms/reporting": "workspace:*",
+    "@lmms/reviews": "workspace:*",
     "@lmms/whatsapp": "workspace:*"
   },
   "devDependencies": {

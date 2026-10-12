@@ -27,6 +27,7 @@
     "@lmms/journey-builder": "workspace:*",
     "@lmms/migration": "workspace:*",
     "@lmms/reporting": "workspace:*",
+    "@lmms/reviews": "workspace:*",
     "@lmms/segmentation": "workspace:*",
     "@lmms/whatsapp": "workspace:*"
   },
