@@ -95,6 +95,7 @@ export default function TenantDetailPage() {
           <TabsTrigger value="segments">Segments</TabsTrigger>
           <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
           <TabsTrigger value="automations">Automations</TabsTrigger>
+          <TabsTrigger value="journeys">Journeys</TabsTrigger>
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
           <TabsTrigger value="migration">Migration</TabsTrigger>
@@ -139,94 +140,35 @@ export default function TenantDetailPage() {
         </TabsContent>
 
         <TabsContent value="data">
-          <Card>
-            <CardBody className="space-y-3">
-              <CardTitle>Data sources</CardTitle>
-              <p className="text-sm text-slate-500">
-                <Link href={`/tenants/${tenant.id}/data`} className="underline">
-                  Open the data sources page →
-                </Link>
-              </p>
-            </CardBody>
-          </Card>
+          <Card><CardBody><CardTitle>Data sources</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/data`} className="underline">Open the data sources page →</Link></p></CardBody></Card>
         </TabsContent>
 
         <TabsContent value="segments">
-          <Card>
-            <CardBody className="space-y-3">
-              <CardTitle>Segments</CardTitle>
-              <p className="text-sm text-slate-500">
-                <Link href={`/tenants/${tenant.id}/segments`} className="underline">
-                  Open the segments page →
-                </Link>
-              </p>
-            </CardBody>
-          </Card>
+          <Card><CardBody><CardTitle>Segments</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/segments`} className="underline">Open the segments page →</Link></p></CardBody></Card>
         </TabsContent>
 
         <TabsContent value="campaigns">
-          <Card>
-            <CardBody className="space-y-3">
-              <CardTitle>Campaigns</CardTitle>
-              <p className="text-sm text-slate-500">
-                <Link href={`/tenants/${tenant.id}/campaigns`} className="underline">
-                  Open the campaigns page →
-                </Link>
-              </p>
-            </CardBody>
-          </Card>
+          <Card><CardBody><CardTitle>Campaigns</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/campaigns`} className="underline">Open the campaigns page →</Link></p></CardBody></Card>
         </TabsContent>
 
         <TabsContent value="automations">
-          <Card>
-            <CardBody className="space-y-3">
-              <CardTitle>Automations</CardTitle>
-              <p className="text-sm text-slate-500">
-                <Link href={`/tenants/${tenant.id}/automations`} className="underline">
-                  Open the automations page →
-                </Link>
-              </p>
-            </CardBody>
-          </Card>
+          <Card><CardBody><CardTitle>Automations</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/automations`} className="underline">Open the automations page →</Link></p></CardBody></Card>
+        </TabsContent>
+
+        <TabsContent value="journeys">
+          <Card><CardBody><CardTitle>Journeys</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/journeys`} className="underline">Open the journey builder →</Link></p></CardBody></Card>
         </TabsContent>
 
         <TabsContent value="calendar">
-          <Card>
-            <CardBody className="space-y-3">
-              <CardTitle>Content Calendar</CardTitle>
-              <p className="text-sm text-slate-500">
-                <Link href={`/tenants/${tenant.id}/calendar`} className="underline">
-                  Open the calendar page →
-                </Link>
-              </p>
-            </CardBody>
-          </Card>
+          <Card><CardBody><CardTitle>Content Calendar</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/calendar`} className="underline">Open the calendar page →</Link></p></CardBody></Card>
         </TabsContent>
 
         <TabsContent value="compliance">
-          <Card>
-            <CardBody className="space-y-3">
-              <CardTitle>Compliance</CardTitle>
-              <p className="text-sm text-slate-500">
-                <Link href={`/tenants/${tenant.id}/compliance`} className="underline">
-                  Open the compliance dashboard →
-                </Link>
-              </p>
-            </CardBody>
-          </Card>
+          <Card><CardBody><CardTitle>Compliance</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/compliance`} className="underline">Open the compliance dashboard →</Link></p></CardBody></Card>
         </TabsContent>
 
         <TabsContent value="migration">
-          <Card>
-            <CardBody className="space-y-3">
-              <CardTitle>Migration to ERP</CardTitle>
-              <p className="text-sm text-slate-500">
-                <Link href={`/tenants/${tenant.id}/migration`} className="underline">
-                  Open the migration page →
-                </Link>
-              </p>
-            </CardBody>
-          </Card>
+          <Card><CardBody><CardTitle>Migration to ERP</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/migration`} className="underline">Open the migration page →</Link></p></CardBody></Card>
         </TabsContent>
       </Tabs>
     </main>
