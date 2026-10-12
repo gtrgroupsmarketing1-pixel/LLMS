@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import {
   Badge,
   Button,
@@ -24,7 +25,6 @@ const CHANNELS = [
   'PRINT',
   'IN_STORE',
 ] as const;
-
 type Channel = (typeof CHANNELS)[number];
 
 interface CardRow {
@@ -39,17 +39,6 @@ interface CardRow {
   };
 }
 
-const NEXT_ACTION: Record<string, { to: string; label: string } | null> = {
-  DRAFT: { to: 'INTERNAL_REVIEW', label: 'Send to Internal Review' },
-  INTERNAL_REVIEW: null,
-  CLIENT_REVIEW: null,
-  APPROVED: { to: 'SCHEDULED', label: 'Schedule' },
-  SCHEDULED: { to: 'LIVE', label: 'Publish now' },
-  LIVE: { to: 'COMPLETED', label: 'Mark completed' },
-  REJECTED: { to: 'DRAFT', label: 'Revise' },
-  COMPLETED: null,
-};
-
 export default function TenantCalendarPage() {
   const params = useParams<{ id: string }>();
   const [cards, setCards] = useState<CardRow[]>([]);
@@ -60,7 +49,6 @@ export default function TenantCalendarPage() {
   const [copyEn, setCopyEn] = useState('');
   const [newChannel, setNewChannel] = useState<Channel>('WHATSAPP');
   const [busy, setBusy] = useState(false);
-  const [approvalUrl, setApprovalUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function load() {
@@ -98,12 +86,7 @@ export default function TenantCalendarPage() {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title,
-            copyAr,
-            copyEn,
-            channel: newChannel,
-          }),
+          body: JSON.stringify({ title, copyAr, copyEn, channel: newChannel }),
         },
       );
       setTitle('');
@@ -115,36 +98,29 @@ export default function TenantCalendarPage() {
     }
   }
 
-  async function transition(cardId: string, to: string) {
-    await authedFetch(
-      `/api/content-calendar/agency/tenants/${params.id}/cards/${cardId}/transition`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ to }),
-      },
-    );
-    void load();
-  }
-
-  async function sendForReview(cardId: string) {
-    const r = await authedFetch(
-      `/api/content-calendar/agency/tenants/${params.id}/cards/${cardId}/send-for-client-review`,
-      { method: 'POST' },
-    );
-    if (!r.ok) return;
-    const data = (await r.json()) as { approvalUrl: string };
-    setApprovalUrl(data.approvalUrl);
-    void load();
-  }
-
   return (
     <main className="p-8 max-w-6xl mx-auto space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold">Content Calendar</h1>
-        <p className="text-sm text-slate-500">
-          Bilingual content cards with a full approval workflow.
-        </p>
+      <header className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Content Calendar</h1>
+          <p className="text-sm text-slate-500">
+            Bilingual content cards with a full approval workflow.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Link
+            href={`/tenants/${params.id}/calendar/queue`}
+            className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50"
+          >
+            Approval Queue
+          </Link>
+          <Link
+            href={`/tenants/${params.id}/calendar/analytics`}
+            className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50"
+          >
+            Rejection Analytics
+          </Link>
+        </div>
       </header>
 
       {error && <p className="text-red-600">{error}</p>}
@@ -214,37 +190,6 @@ export default function TenantCalendarPage() {
         </CardBody>
       </Card>
 
-      {approvalUrl && (
-        <Card className="bg-blue-50 border-blue-200">
-          <CardBody className="space-y-2">
-            <p className="text-sm font-medium">
-              Send this one-tap approval link to the client:
-            </p>
-            <code className="block break-all rounded bg-white p-2 text-xs">
-              {approvalUrl}
-            </code>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  void navigator.clipboard?.writeText(approvalUrl);
-                }}
-              >
-                Copy link
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setApprovalUrl(null)}
-              >
-                Dismiss
-              </Button>
-            </div>
-          </CardBody>
-        </Card>
-      )}
-
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
@@ -252,73 +197,54 @@ export default function TenantCalendarPage() {
           ))}
         </div>
       ) : cards.length === 0 ? (
-        <p className="text-sm text-slate-500">
-          No content cards yet. Create one above.
-        </p>
+        <p className="text-sm text-slate-500">No content cards yet.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {cards.map((c) => {
-            const action = NEXT_ACTION[c.status] ?? null;
-            return (
-              <Card key={c.id}>
-                <CardBody className="space-y-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-semibold">{c.title}</h3>
-                    <Badge
-                      variant={
-                        c.status === 'LIVE' || c.status === 'APPROVED'
-                          ? 'success'
-                          : c.status === 'REJECTED'
-                            ? 'danger'
-                            : c.status === 'CLIENT_REVIEW' ||
-                                c.status === 'INTERNAL_REVIEW'
-                              ? 'warning'
-                              : 'default'
-                      }
-                    >
-                      {c.status}
-                    </Badge>
+          {cards.map((c) => (
+            <Card key={c.id}>
+              <CardBody className="space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <Link
+                    href={`/tenants/${params.id}/calendar/${c.id}`}
+                    className="font-semibold no-underline text-slate-900 hover:underline"
+                  >
+                    {c.title}
+                  </Link>
+                  <Badge
+                    variant={
+                      c.status === 'LIVE' || c.status === 'APPROVED'
+                        ? 'success'
+                        : c.status === 'REJECTED'
+                          ? 'danger'
+                          : c.status === 'CLIENT_REVIEW' ||
+                              c.status === 'INTERNAL_REVIEW'
+                            ? 'warning'
+                            : 'default'
+                    }
+                  >
+                    {c.status}
+                  </Badge>
+                </div>
+                <div className="text-xs text-slate-500">{c.channel}</div>
+                {c.copy.ar.text && (
+                  <div dir="rtl" className="rounded bg-slate-50 p-2 text-sm">
+                    {c.copy.ar.text}
                   </div>
-                  <div className="text-xs text-slate-500">{c.channel}</div>
-                  {c.copy.ar.text && (
-                    <div
-                      dir="rtl"
-                      className="rounded bg-slate-50 p-2 text-sm"
-                    >
-                      {c.copy.ar.text}
-                    </div>
-                  )}
-                  {c.copy.en.text && (
-                    <div
-                      dir="ltr"
-                      className="rounded bg-slate-50 p-2 text-sm"
-                    >
-                      {c.copy.en.text}
-                    </div>
-                  )}
-                  <div className="flex flex-wrap gap-2">
-                    {action && (
-                      <Button
-                        size="sm"
-                        onClick={() => transition(c.id, action.to)}
-                      >
-                        {action.label}
-                      </Button>
-                    )}
-                    {c.status === 'INTERNAL_REVIEW' && (
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => sendForReview(c.id)}
-                      >
-                        Send to Client
-                      </Button>
-                    )}
+                )}
+                {c.copy.en.text && (
+                  <div dir="ltr" className="rounded bg-slate-50 p-2 text-sm">
+                    {c.copy.en.text}
                   </div>
-                </CardBody>
-              </Card>
-            );
-          })}
+                )}
+                <Link
+                  href={`/tenants/${params.id}/calendar/${c.id}`}
+                  className="text-xs text-slate-500 hover:text-slate-900"
+                >
+                  Open card →
+                </Link>
+              </CardBody>
+            </Card>
+          ))}
         </div>
       )}
     </main>

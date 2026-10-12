@@ -10,6 +10,7 @@ const NAV = [
   { href: '/portal', labelAr: 'الرئيسية', labelEn: 'Home', icon: '🏠' },
   { href: '/portal/approvals', labelAr: 'الموافقات', labelEn: 'Approvals', icon: '✅' },
   { href: '/portal/campaigns', labelAr: 'الحملات', labelEn: 'Campaigns', icon: '📣' },
+  { href: '/portal/calendar', labelAr: 'التقويم', labelEn: 'Calendar', icon: '📅' },
   { href: '/portal/messages', labelAr: 'الرسائل', labelEn: 'Messages', icon: '💬' },
   { href: '/portal/reviews', labelAr: 'التقييمات', labelEn: 'Reviews', icon: '⭐' },
   { href: '/portal/reports', labelAr: 'التقارير', labelEn: 'Reports', icon: '📊' },
