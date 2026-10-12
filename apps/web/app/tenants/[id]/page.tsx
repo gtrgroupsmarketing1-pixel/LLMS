@@ -91,6 +91,7 @@ export default function TenantDetailPage() {
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="brand">Brand</TabsTrigger>
           <TabsTrigger value="data">Data</TabsTrigger>
           <TabsTrigger value="segments">Segments</TabsTrigger>
           <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
@@ -137,6 +138,10 @@ export default function TenantDetailPage() {
               </dl>
             </CardBody>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="brand">
+          <Card><CardBody><CardTitle>Brand Hub</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/brand`} className="underline">Open the brand hub →</Link></p></CardBody></Card>
         </TabsContent>
 
         <TabsContent value="data">
