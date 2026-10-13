@@ -103,6 +103,7 @@ export default function TenantDetailPage() {
           <TabsTrigger value="reviews">Reviews</TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
           <TabsTrigger value="migration">Migration</TabsTrigger>
+          <TabsTrigger value="b2b">B2B</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -189,6 +190,10 @@ export default function TenantDetailPage() {
 
         <TabsContent value="migration">
           <Card><CardBody><CardTitle>Migration to ERP</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/migration`} className="underline">Open the migration page →</Link></p></CardBody></Card>
+        </TabsContent>
+
+        <TabsContent value="b2b">
+          <Card><CardBody><CardTitle>B2B Pipeline</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/b2b`} className="underline">Open the B2B pipeline →</Link></p></CardBody></Card>
         </TabsContent>
       </Tabs>
     </main>

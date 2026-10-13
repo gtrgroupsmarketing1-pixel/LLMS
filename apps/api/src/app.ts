@@ -21,6 +21,7 @@ import { brandRouter } from './routes/brand.routes';
 import { reviewsRouter } from './routes/reviews.routes';
 import { adsRouter } from './routes/ads.routes';
 import { attributionRouter } from './routes/attribution.routes';
+import { b2bRouter } from './routes/b2b.routes';
 
 export function createApp() {
   const app = express();
@@ -48,6 +49,7 @@ export function createApp() {
   app.use('/reviews', reviewsRouter);
   app.use('/ads', tenantScopeGuard, adsRouter);
   app.use('/attribution', tenantScopeGuard, attributionRouter);
+  app.use('/b2b', tenantScopeGuard, b2bRouter);
 
   app.use(errorHandler);
   return app;
