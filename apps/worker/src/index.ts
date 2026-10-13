@@ -17,6 +17,8 @@ import { approvalExpirySweeperJob } from './jobs/approval-expiry-sweeper';
 import { gbpSyncJob } from './jobs/gbp-sync';
 import { adsSpendSyncJob } from './jobs/ads-spend-sync';
 import { b2bFollowUpJob } from './jobs/b2b-follow-up';
+import { billingInvoiceGenerationJob } from './jobs/billing-invoice-generation';
+import { billingDunningJob } from './jobs/billing-dunning';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 const SIX_HOURS = 6 * 60 * 60 * 1000;
@@ -50,6 +52,8 @@ async function expirySweepTick() { await safe('approval-expiry-sweeper', approva
 async function gbpTick() { await safe('gbp-sync', gbpSyncJob); }
 async function adsSpendTick() { await safe('ads-spend-sync', adsSpendSyncJob); }
 async function b2bTick() { await safe('b2b-follow-up', b2bFollowUpJob); }
+async function billingGenTick() { await safe('billing-invoice-gen', billingInvoiceGenerationJob); }
+async function billingDunningTick() { await safe('billing-dunning', billingDunningJob); }
 
 async function monthlyGuard() {
   const now = new Date();
@@ -60,6 +64,13 @@ async function weeklyGuard() {
   const now = new Date();
   if (now.getUTCDay() === 1 && now.getUTCHours() === 6) {
     await safe('weekly-summary', weeklySummaryJob);
+  }
+}
+
+async function billingGuard() {
+  const now = new Date();
+  if (now.getUTCDate() === 1 && now.getUTCHours() === 3) {
+    await billingGenTick();
   }
 }
 
@@ -83,6 +94,7 @@ void expirySweepTick();
 void gbpTick();
 void adsSpendTick();
 void b2bTick();
+void billingDunningTick();
 
 setInterval(() => void healthTick(), ONE_DAY);
 setInterval(() => void erpTick(), SIX_HOURS);
@@ -101,5 +113,7 @@ setInterval(() => void expirySweepTick(), ONE_HOUR);
 setInterval(() => void gbpTick(), ONE_DAY);
 setInterval(() => void adsSpendTick(), ONE_DAY);
 setInterval(() => void b2bTick(), ONE_DAY);
+setInterval(() => void billingDunningTick(), ONE_DAY);
 setInterval(() => void monthlyGuard(), ONE_HOUR);
 setInterval(() => void weeklyGuard(), ONE_HOUR);
+setInterval(() => void billingGuard(), ONE_HOUR);

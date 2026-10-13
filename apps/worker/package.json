@@ -12,6 +12,7 @@
     "@lmms/audit": "workspace:*",
     "@lmms/automations": "workspace:*",
     "@lmms/b2b": "workspace:*",
+    "@lmms/billing": "workspace:*",
     "@lmms/compliance": "workspace:*",
     "@lmms/config": "workspace:*",
     "@lmms/content-calendar": "workspace:*",

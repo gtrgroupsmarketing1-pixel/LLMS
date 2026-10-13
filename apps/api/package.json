@@ -19,6 +19,7 @@
     "@lmms/auth": "workspace:*",
     "@lmms/automations": "workspace:*",
     "@lmms/b2b": "workspace:*",
+    "@lmms/billing": "workspace:*",
     "@lmms/brand": "workspace:*",
     "@lmms/campaigns": "workspace:*",
     "@lmms/compliance": "workspace:*",
