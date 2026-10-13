@@ -15,6 +15,7 @@ import { journeyKillEnforcerJob } from './jobs/journey-kill-enforcer';
 import { contentApprovalReminderJob } from './jobs/content-approval-reminder';
 import { approvalExpirySweeperJob } from './jobs/approval-expiry-sweeper';
 import { gbpSyncJob } from './jobs/gbp-sync';
+import { adsSpendSyncJob } from './jobs/ads-spend-sync';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 const SIX_HOURS = 6 * 60 * 60 * 1000;
@@ -46,6 +47,7 @@ async function journeyKillTick() { await safe('journey-kill-enforcer', journeyKi
 async function approvalReminderTick() { await safe('content-approval-reminder', contentApprovalReminderJob); }
 async function expirySweepTick() { await safe('approval-expiry-sweeper', approvalExpirySweeperJob); }
 async function gbpTick() { await safe('gbp-sync', gbpSyncJob); }
+async function adsSpendTick() { await safe('ads-spend-sync', adsSpendSyncJob); }
 
 async function monthlyGuard() {
   const now = new Date();
@@ -77,6 +79,7 @@ void journeyKillTick();
 void approvalReminderTick();
 void expirySweepTick();
 void gbpTick();
+void adsSpendTick();
 
 setInterval(() => void healthTick(), ONE_DAY);
 setInterval(() => void erpTick(), SIX_HOURS);
@@ -93,5 +96,6 @@ setInterval(() => void journeyKillTick(), ONE_MIN);
 setInterval(() => void approvalReminderTick(), ONE_HOUR);
 setInterval(() => void expirySweepTick(), ONE_HOUR);
 setInterval(() => void gbpTick(), ONE_DAY);
+setInterval(() => void adsSpendTick(), ONE_DAY);
 setInterval(() => void monthlyGuard(), ONE_HOUR);
 setInterval(() => void weeklyGuard(), ONE_HOUR);

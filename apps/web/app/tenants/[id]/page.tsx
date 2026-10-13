@@ -95,6 +95,8 @@ export default function TenantDetailPage() {
           <TabsTrigger value="data">Data</TabsTrigger>
           <TabsTrigger value="segments">Segments</TabsTrigger>
           <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
+          <TabsTrigger value="ads">Ads</TabsTrigger>
+          <TabsTrigger value="attribution">Attribution</TabsTrigger>
           <TabsTrigger value="automations">Automations</TabsTrigger>
           <TabsTrigger value="journeys">Journeys</TabsTrigger>
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
@@ -157,6 +159,14 @@ export default function TenantDetailPage() {
           <Card><CardBody><CardTitle>Campaigns</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/campaigns`} className="underline">Open the campaigns page →</Link></p></CardBody></Card>
         </TabsContent>
 
+        <TabsContent value="ads">
+          <Card><CardBody><CardTitle>Ads</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/ads`} className="underline">Open the ads page →</Link></p></CardBody></Card>
+        </TabsContent>
+
+        <TabsContent value="attribution">
+          <Card><CardBody><CardTitle>Attribution</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/attribution`} className="underline">Open the attribution dashboard →</Link></p></CardBody></Card>
+        </TabsContent>
+
         <TabsContent value="automations">
           <Card><CardBody><CardTitle>Automations</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/automations`} className="underline">Open the automations page →</Link></p></CardBody></Card>
         </TabsContent>
@@ -170,7 +180,7 @@ export default function TenantDetailPage() {
         </TabsContent>
 
         <TabsContent value="reviews">
-          <Card><CardBody><CardTitle>Reviews</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/reviews`} className="underline">Open the reviews inbox →</Link></p><p className="text-sm text-slate-500 mt-1"><Link href={`/tenants/${tenant.id}/directory`} className="underline">Open directory listings →</Link></p></CardBody></Card>
+          <Card><CardBody><CardTitle>Reviews</CardTitle><p className="text-sm text-slate-500 mt-2"><Link href={`/tenants/${tenant.id}/reviews`} className="underline">Open the reviews inbox →</Link></p></CardBody></Card>
         </TabsContent>
 
         <TabsContent value="compliance">

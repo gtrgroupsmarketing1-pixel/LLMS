@@ -13,6 +13,8 @@
   "dependencies": {
     "express": "^4.19.2",
     "multer": "^1.4.5-lts.1",
+    "@lmms/ads": "workspace:*",
+    "@lmms/attribution": "workspace:*",
     "@lmms/audit": "workspace:*",
     "@lmms/auth": "workspace:*",
     "@lmms/automations": "workspace:*",

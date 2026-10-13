@@ -19,6 +19,8 @@ import { migrationRouter } from './routes/migration.routes';
 import { journeyRouter } from './routes/journey.routes';
 import { brandRouter } from './routes/brand.routes';
 import { reviewsRouter } from './routes/reviews.routes';
+import { adsRouter } from './routes/ads.routes';
+import { attributionRouter } from './routes/attribution.routes';
 
 export function createApp() {
   const app = express();
@@ -44,6 +46,8 @@ export function createApp() {
   app.use('/journeys', tenantScopeGuard, journeyRouter);
   app.use('/brand', brandRouter);
   app.use('/reviews', reviewsRouter);
+  app.use('/ads', tenantScopeGuard, adsRouter);
+  app.use('/attribution', tenantScopeGuard, attributionRouter);
 
   app.use(errorHandler);
   return app;
