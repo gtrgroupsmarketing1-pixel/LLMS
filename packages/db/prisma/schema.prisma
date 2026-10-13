@@ -1525,3 +1525,159 @@ model Attribution {
   @@index([tenantId, campaignId])
   @@index([tenantId, adCampaignId])
 }
+
+// === V2.8 Commercial / B2B additions ===
+
+enum ProspectCategory {
+  HOTEL
+  GYM
+  SALON
+  AIRBNB
+  RESTAURANT
+  OFFICE
+  HOSPITAL
+  SCHOOL
+  OTHER
+}
+
+enum ProspectStatus {
+  NEW
+  CONTACTED
+  REPLIED
+  MEETING
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
+
+enum OutreachChannel {
+  EMAIL
+  WHATSAPP
+  CALL
+  LINKEDIN
+  IN_PERSON
+}
+
+enum OutreachDirection {
+  OUTBOUND
+  INBOUND
+}
+
+enum ProposalStatus {
+  DRAFT
+  SENT
+  VIEWED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum ContractStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+  RENEWED
+}
+
+model Prospect {
+  id             String            @id @default(uuid())
+  tenantId       String
+  businessName   String
+  businessNameAr String?
+  category       ProspectCategory
+  contactName    String?
+  contactPhone   String?
+  contactEmail   String?
+  zone           String?
+  country        String
+  status         ProspectStatus    @default(NEW)
+  source         String?
+  assignedTo     String?
+  nextFollowUpAt DateTime?
+  lastContactAt  DateTime?
+  notes          String?
+  createdBy      String
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  events    OutreachEvent[]
+  proposals Proposal[]
+  contracts Contract[]
+
+  @@unique([tenantId, contactEmail])
+  @@index([tenantId, status])
+  @@index([tenantId, category])
+  @@index([tenantId, nextFollowUpAt])
+}
+
+model OutreachEvent {
+  id          String             @id @default(uuid())
+  tenantId    String
+  prospectId  String
+  channel     OutreachChannel
+  direction   OutreachDirection
+  subject     String?
+  body        String?
+  outcome     String?
+  templateKey String?
+  actorId     String?
+  occurredAt  DateTime           @default(now())
+  createdAt   DateTime           @default(now())
+
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, prospectId, occurredAt])
+  @@index([tenantId, direction])
+}
+
+model Proposal {
+  id              String         @id @default(uuid())
+  tenantId        String
+  prospectId      String
+  version         Int            @default(1)
+  title           String
+  body            String
+  currency        String
+  totalValue      Decimal        @db.Decimal(12, 2)
+  status          ProposalStatus @default(DRAFT)
+  sentAt          DateTime?
+  viewedAt        DateTime?
+  decidedAt       DateTime?
+  rejectionReason String?
+  createdBy       String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  @@unique([prospectId, version])
+  @@index([tenantId, status])
+}
+
+model Contract {
+  id                 String         @id @default(uuid())
+  tenantId           String
+  prospectId         String?
+  name               String
+  value              Decimal        @db.Decimal(12, 2)
+  currency           String
+  status             ContractStatus @default(ACTIVE)
+  signedDate         DateTime
+  startDate          DateTime
+  endDate            DateTime?
+  renewalDate        DateTime?
+  originatingCampaignId String?
+  originatingAdCampaignId String?
+  notes              String?
+  createdBy          String
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  prospect Prospect? @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, status])
+  @@index([tenantId, renewalDate])
+  @@index([tenantId, originatingCampaignId])
+}
