@@ -1869,3 +1869,122 @@ model VatRate {
 
   @@index([country, effectiveFrom])
 }
+
+// === V2.10 Agency Internal Tools additions ===
+
+enum TaskStatus {
+  OPEN
+  IN_PROGRESS
+  BLOCKED
+  DONE
+  CANCELLED
+}
+
+enum TaskPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum TaskLinkType {
+  CAMPAIGN
+  CONTENT_CARD
+  CLIENT
+  PROSPECT
+  CONTRACT
+  AD_CAMPAIGN
+  GENERIC
+}
+
+enum SopCategory {
+  ONBOARDING
+  CAMPAIGN_LAUNCH
+  CONTENT_REVIEW
+  COMPLIANCE
+  BILLING
+  MIGRATION
+  REVIEW_MANAGEMENT
+  GENERAL
+}
+
+model Task {
+  id            String        @id @default(uuid())
+  tenantId      String?
+  title         String
+  description   String?
+  status        TaskStatus    @default(OPEN)
+  priority      TaskPriority  @default(NORMAL)
+  linkType      TaskLinkType  @default(GENERIC)
+  linkId        String?
+  assignedTo    String?
+  createdBy     String
+  dueAt         DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  timeEntries TimeEntry[]
+
+  @@index([tenantId, status])
+  @@index([assignedTo, status])
+  @@index([linkType, linkId])
+  @@index([dueAt])
+}
+
+model TimeEntry {
+  id          String   @id @default(uuid())
+  tenantId    String?
+  taskId      String?
+  userId      String
+  minutes     Int
+  note        String?
+  startedAt   DateTime
+  endedAt     DateTime
+  createdAt   DateTime @default(now())
+
+  task Task? @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([userId, startedAt])
+  @@index([tenantId, startedAt])
+}
+
+model InternalComment {
+  id         String   @id @default(uuid())
+  tenantId   String?
+  authorId   String
+  entityType String
+  entityId   String
+  body       String
+  mentions   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId, createdAt])
+  @@index([tenantId, createdAt])
+}
+
+model SopEntry {
+  id          String       @id @default(uuid())
+  key         String       @unique
+  title       String
+  titleAr     String?
+  category    SopCategory
+  steps       Json
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model SopCompletion {
+  id           String   @id @default(uuid())
+  tenantId     String?
+  sopKey       String
+  entityType   String?
+  entityId     String?
+  completedBy  String
+  completedAt  DateTime @default(now())
+  notes        String?
+
+  @@index([sopKey, completedAt])
+  @@index([tenantId, completedAt])
+}
