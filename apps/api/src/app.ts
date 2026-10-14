@@ -16,6 +16,7 @@ import { contentCalendarRouter } from './routes/content-calendar.routes';
 import { contentNotificationRouter } from './routes/content-notification.routes';
 import { contentPortalV2Router } from './routes/content-portal-v2.routes';
 import { migrationRouter } from './routes/migration.routes';
+import { migrationPipelineRouter } from './routes/migration-pipeline.routes';
 import { journeyRouter } from './routes/journey.routes';
 import { brandRouter } from './routes/brand.routes';
 import { reviewsRouter } from './routes/reviews.routes';
@@ -47,6 +48,7 @@ export function createApp() {
   app.use('/content-notifications', contentNotificationRouter);
   app.use('/content-portal', contentPortalV2Router);
   app.use('/migration', tenantScopeGuard, migrationRouter);
+  app.use('/migration-pipeline', migrationPipelineRouter);
   app.use('/journeys', tenantScopeGuard, journeyRouter);
   app.use('/brand', brandRouter);
   app.use('/reviews', reviewsRouter);

@@ -6,6 +6,7 @@ import {
   Badge,
   Card,
   CardBody,
+  CardTitle,
   Skeleton,
   Table,
   TableBody,
@@ -89,13 +90,19 @@ export default function AgencyOverviewPage() {
             href="/agency/tools"
             className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50"
           >
-            Agency Tools →
+            Agency Tools
+          </Link>
+          <Link
+            href="/agency/pipeline"
+            className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50"
+          >
+            Migration Pipeline
           </Link>
           <Link
             href="/tenants"
             className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50"
           >
-            Tenants →
+            Tenants
           </Link>
         </div>
       </header>

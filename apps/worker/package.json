@@ -21,6 +21,7 @@
     "@lmms/ingestion": "workspace:*",
     "@lmms/journey-builder": "workspace:*",
     "@lmms/migration": "workspace:*",
+    "@lmms/migration-pipeline": "workspace:*",
     "@lmms/qbr": "workspace:*",
     "@lmms/reporting": "workspace:*",
     "@lmms/reviews": "workspace:*",
