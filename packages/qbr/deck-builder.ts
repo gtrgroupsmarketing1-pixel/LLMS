@@ -145,22 +145,21 @@ export async function buildDeck(input: DeckInput) {
     attribution = null;
   }
 
+  const kpisAsRecord = currentFiltered as unknown as Record<string, unknown>;
+
   const metrics: DeckMetrics = {
     period: {
       start: input.periodStart.toISOString(),
       end: input.periodEnd.toISOString(),
     },
-    kpis: currentFiltered as Record<string, unknown>,
+    kpis: kpisAsRecord,
     comparison,
     cohort,
     attribution,
   };
 
   const highlights = buildHighlights(comparison);
-  const recommendations = buildRecommendations(
-    currentFiltered as Record<string, unknown>,
-    comparison,
-  );
+  const recommendations = buildRecommendations(kpisAsRecord, comparison);
 
   const shareToken = generateShareToken();
 
