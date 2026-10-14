@@ -1988,3 +1988,85 @@ model SopCompletion {
   @@index([sopKey, completedAt])
   @@index([tenantId, completedAt])
 }
+
+// === V2.11 Advanced Reporting & QBR additions ===
+
+enum QbrStatus {
+  DRAFT
+  READY
+  SHARED
+  ARCHIVED
+}
+
+enum ReportScheduleKind {
+  WEEKLY_SUMMARY
+  MONTHLY_REPORT
+  QUARTERLY_QBR
+}
+
+enum ReportScheduleChannel {
+  WHATSAPP
+  EMAIL
+  PORTAL
+}
+
+model QbrDeck {
+  id             String    @id @default(uuid())
+  tenantId       String
+  periodStart    DateTime
+  periodEnd      DateTime
+  status         QbrStatus @default(DRAFT)
+  metrics        Json
+  highlights     Json
+  recommendations Json
+  comparisonData Json?
+  shareToken     String?   @unique
+  sharedAt       DateTime?
+  generatedAt    DateTime  @default(now())
+  generatedBy    String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([tenantId, periodStart])
+  @@index([tenantId, status])
+  @@index([tenantId, generatedAt])
+}
+
+model CohortSnapshot {
+  id             String   @id @default(uuid())
+  tenantId       String
+  cohortDate     DateTime
+  cohortLabel    String
+  totalCustomers Int      @default(0)
+  activeCount    Int      @default(0)
+  lapsedCount    Int      @default(0)
+  dormantCount   Int      @default(0)
+  averageOrders  Decimal  @db.Decimal(12, 2) @default(0)
+  averageRevenue Decimal  @db.Decimal(12, 2) @default(0)
+  retention30    Int      @default(0)
+  retention60    Int      @default(0)
+  retention90    Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@unique([tenantId, cohortDate])
+  @@index([tenantId, cohortDate])
+}
+
+model ReportSchedule {
+  id              String                  @id @default(uuid())
+  tenantId        String
+  kind            ReportScheduleKind
+  channel         ReportScheduleChannel
+  recipient       String
+  enabled         Boolean                 @default(true)
+  dayOfWeek       Int?
+  dayOfMonth      Int?
+  hourUtc         Int                      @default(9)
+  lastRunAt       DateTime?
+  lastRunStatus   String?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  @@unique([tenantId, kind, channel, recipient])
+  @@index([tenantId, enabled])
+}
