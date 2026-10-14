@@ -6,7 +6,6 @@ import {
   Badge,
   Card,
   CardBody,
-  CardTitle,
   Skeleton,
   Table,
   TableBody,
@@ -85,12 +84,20 @@ export default function AgencyOverviewPage() {
           <h1 className="text-2xl font-bold">Agency Overview</h1>
           <p className="text-sm text-slate-500">All tenants at a glance.</p>
         </div>
-        <Link
-          href="/tenants"
-          className="text-sm text-slate-500 hover:text-slate-900"
-        >
-          Tenants →
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            href="/agency/tools"
+            className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50"
+          >
+            Agency Tools →
+          </Link>
+          <Link
+            href="/tenants"
+            className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50"
+          >
+            Tenants →
+          </Link>
+        </div>
       </header>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

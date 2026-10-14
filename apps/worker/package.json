@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@lmms/ads": "workspace:*",
+    "@lmms/agency": "workspace:*",
     "@lmms/audit": "workspace:*",
     "@lmms/automations": "workspace:*",
     "@lmms/b2b": "workspace:*",
