@@ -172,13 +172,22 @@ model TenantHealthScore {
 }
 
 model UpgradeReadiness {
-  id       String   @id @default(uuid())
-  tenantId String
-  date     DateTime @default(now())
-  score    Int
-  criteria Json
+  id           String    @id @default(uuid())
+  tenantId     String
+  date         DateTime  @default(now())
+  score        Int
+  criteria     Json
+  tier         String    @default("MEDIUM")
+  notes        String?
+  pitchedAt    DateTime?
+  pitchedBy    String?
+  convertedAt  DateTime?
+  notConvertedReason String?
+  createdAt    DateTime  @default(now())
 
+  @@unique([tenantId, date])
   @@index([tenantId, date])
+  @@index([tenantId, score])
 }
 
 model DataSource {
@@ -2069,4 +2078,59 @@ model ReportSchedule {
 
   @@unique([tenantId, kind, channel, recipient])
   @@index([tenantId, enabled])
+}
+
+// === V2.12 Migration Pipeline additions ===
+
+enum PitchOutcome {
+  PENDING
+  ACCEPTED
+  DECLINED
+  DEFERRED
+}
+
+enum ConversionEventType {
+  PITCH_SENT
+  DEMO_BOOKED
+  PRICE_QUOTED
+  CONTRACT_DISCUSSED
+  CONVERTED
+  DECLINED
+  DEFERRED
+}
+
+model MigrationPitch {
+  id            String        @id @default(uuid())
+  tenantId      String
+  readinessId   String?
+  score         Int
+  tier          String
+  pitchPack     Json
+  outcome       PitchOutcome  @default(PENDING)
+  sentAt        DateTime      @default(now())
+  sentBy        String
+  decidedAt     DateTime?
+  decisionNote  String?
+  createdAt     DateTime      @default(now())
+
+  events ConversionEvent[]
+
+  @@index([tenantId, outcome])
+  @@index([tenantId, sentAt])
+}
+
+model ConversionEvent {
+  id         String             @id @default(uuid())
+  tenantId   String
+  pitchId    String?
+  type       ConversionEventType
+  actorId    String?
+  note       String?
+  meta       Json?
+  occurredAt DateTime           @default(now())
+
+  pitch MigrationPitch? @relation(fields: [pitchId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, type, occurredAt])
+  @@index([tenantId, pitchId])
 }
