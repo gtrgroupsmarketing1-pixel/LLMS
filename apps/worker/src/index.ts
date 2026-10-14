@@ -20,12 +20,15 @@ import { b2bFollowUpJob } from './jobs/b2b-follow-up';
 import { billingInvoiceGenerationJob } from './jobs/billing-invoice-generation';
 import { billingDunningJob } from './jobs/billing-dunning';
 import { agencyDigestJob } from './jobs/agency-digest';
+import { qbrBuilderJob } from './jobs/qbr-builder';
+import { reportScheduleDispatcherJob } from './jobs/report-schedule-dispatcher';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 const SIX_HOURS = 6 * 60 * 60 * 1000;
 const FIVE_MIN = 5 * 60 * 1000;
 const ONE_MIN = 60 * 1000;
 const ONE_HOUR = 60 * 60 * 1000;
+const ONE_WEEK = 7 * ONE_DAY;
 
 async function safe(name: string, fn: () => Promise<unknown>) {
   try {
@@ -56,6 +59,8 @@ async function b2bTick() { await safe('b2b-follow-up', b2bFollowUpJob); }
 async function billingGenTick() { await safe('billing-invoice-gen', billingInvoiceGenerationJob); }
 async function billingDunningTick() { await safe('billing-dunning', billingDunningJob); }
 async function agencyDigestTick() { await safe('agency-digest', agencyDigestJob); }
+async function qbrTick() { await safe('qbr-builder', qbrBuilderJob); }
+async function scheduleTick() { await safe('report-schedule-dispatcher', reportScheduleDispatcherJob); }
 
 async function monthlyGuard() {
   const now = new Date();
@@ -104,6 +109,7 @@ void gbpTick();
 void adsSpendTick();
 void b2bTick();
 void billingDunningTick();
+void scheduleTick();
 
 setInterval(() => void healthTick(), ONE_DAY);
 setInterval(() => void erpTick(), SIX_HOURS);
@@ -123,7 +129,9 @@ setInterval(() => void gbpTick(), ONE_DAY);
 setInterval(() => void adsSpendTick(), ONE_DAY);
 setInterval(() => void b2bTick(), ONE_DAY);
 setInterval(() => void billingDunningTick(), ONE_DAY);
+setInterval(() => void scheduleTick(), ONE_HOUR);
 setInterval(() => void monthlyGuard(), ONE_HOUR);
 setInterval(() => void weeklyGuard(), ONE_HOUR);
 setInterval(() => void billingGuard(), ONE_HOUR);
 setInterval(() => void digestGuard(), ONE_HOUR);
+setInterval(() => void qbrTick(), ONE_WEEK);

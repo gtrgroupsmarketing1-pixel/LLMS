@@ -31,6 +31,7 @@
     "@lmms/ingestion": "workspace:*",
     "@lmms/journey-builder": "workspace:*",
     "@lmms/migration": "workspace:*",
+    "@lmms/qbr": "workspace:*",
     "@lmms/reporting": "workspace:*",
     "@lmms/reviews": "workspace:*",
     "@lmms/segmentation": "workspace:*",
