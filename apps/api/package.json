@@ -36,6 +36,7 @@
     "@lmms/qbr": "workspace:*",
     "@lmms/reporting": "workspace:*",
     "@lmms/reseller": "workspace:*",
+    "@lmms/residency": "workspace:*",
     "@lmms/reviews": "workspace:*",
     "@lmms/segmentation": "workspace:*",
     "@lmms/self-serve": "workspace:*",

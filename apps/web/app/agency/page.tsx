@@ -33,6 +33,7 @@ interface Overview {
     mode: string;
     country: string;
     package: string;
+    region: string;
     churnRisk: boolean;
     upgradeReady: boolean;
     healthScore: number | null;
@@ -85,53 +86,21 @@ export default function AgencyOverviewPage() {
           <h1 className="text-2xl font-bold">Agency Overview</h1>
           <p className="text-sm text-slate-500">All tenants at a glance.</p>
         </div>
-        <div className="flex gap-2">
-          <Link
-            href="/agency/signups"
-            className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50"
-          >
-            Self-Serve Signups
-          </Link>
-          <Link
-            href="/agency/resellers"
-            className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50"
-          >
-            Resellers
-          </Link>
-          <Link
-            href="/agency/tools"
-            className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50"
-          >
-            Agency Tools
-          </Link>
-          <Link
-            href="/agency/pipeline"
-            className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50"
-          >
-            Migration Pipeline
-          </Link>
-          <Link
-            href="/tenants"
-            className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50"
-          >
-            Tenants
-          </Link>
+        <div className="flex gap-2 flex-wrap">
+          <Link href="/agency/signups" className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50">Self-Serve Signups</Link>
+          <Link href="/agency/resellers" className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50">Resellers</Link>
+          <Link href="/agency/residency" className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50">Residency</Link>
+          <Link href="/agency/tools" className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50">Agency Tools</Link>
+          <Link href="/agency/pipeline" className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50">Migration Pipeline</Link>
+          <Link href="/tenants" className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50">Tenants</Link>
         </div>
       </header>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Stat label="Tenants" value={t.tenants} />
         <Stat label="Pending approvals" value={t.pendingApprovals} />
-        <Stat
-          label="Failed syncs"
-          value={t.failedSyncs}
-          tone={t.failedSyncs > 0 ? 'warn' : 'default'}
-        />
-        <Stat
-          label="Churn risk"
-          value={t.churnRisk}
-          tone={t.churnRisk > 0 ? 'warn' : 'default'}
-        />
+        <Stat label="Failed syncs" value={t.failedSyncs} tone={t.failedSyncs > 0 ? 'warn' : 'default'} />
+        <Stat label="Churn risk" value={t.churnRisk} tone={t.churnRisk > 0 ? 'warn' : 'default'} />
       </div>
 
       <Card>
@@ -140,6 +109,7 @@ export default function AgencyOverviewPage() {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Mode</TableHead>
+              <TableHead>Region</TableHead>
               <TableHead>Country</TableHead>
               <TableHead>Package</TableHead>
               <TableHead>Flags</TableHead>
@@ -149,25 +119,17 @@ export default function AgencyOverviewPage() {
             {data.tenants.map((row) => (
               <TableRow key={row.id}>
                 <TableCell>
-                  <Link
-                    href={`/tenants/${row.id}/dashboard`}
-                    className="text-slate-900 underline-offset-2 hover:underline"
-                  >
+                  <Link href={`/tenants/${row.id}/dashboard`} className="text-slate-900 underline-offset-2 hover:underline">
                     {row.nameEn}
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <Badge
-                    variant={
-                      row.mode === 'ERP_CONNECTED'
-                        ? 'success'
-                        : row.mode === 'UPGRADING'
-                          ? 'warning'
-                          : 'info'
-                    }
-                  >
+                  <Badge variant={row.mode === 'ERP_CONNECTED' ? 'success' : row.mode === 'UPGRADING' ? 'warning' : 'info'}>
                     {row.mode}
                   </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={row.region === 'UAE' ? 'default' : 'warning'}>{row.region}</Badge>
                 </TableCell>
                 <TableCell>{row.country}</TableCell>
                 <TableCell>{row.package}</TableCell>
@@ -184,21 +146,9 @@ export default function AgencyOverviewPage() {
   );
 }
 
-function Stat({
-  label,
-  value,
-  tone = 'default',
-}: {
-  label: string;
-  value: number;
-  tone?: 'default' | 'warn';
-}) {
+function Stat({ label, value, tone = 'default' }: { label: string; value: number; tone?: 'default' | 'warn' }) {
   return (
-    <div
-      className={`rounded-lg border p-4 ${
-        tone === 'warn' ? 'bg-amber-50 border-amber-200' : 'bg-white border-slate-200'
-      }`}
-    >
+    <div className={`rounded-lg border p-4 ${tone === 'warn' ? 'bg-amber-50 border-amber-200' : 'bg-white border-slate-200'}`}>
       <div className="text-2xl font-bold text-slate-900">{value}</div>
       <div className="text-xs text-slate-500">{label}</div>
     </div>

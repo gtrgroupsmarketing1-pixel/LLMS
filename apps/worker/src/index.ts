@@ -25,6 +25,7 @@ import { reportScheduleDispatcherJob } from './jobs/report-schedule-dispatcher';
 import { migrationPipelineScoringJob } from './jobs/migration-pipeline-scoring';
 import { websiteVisitAggregationJob } from './jobs/website-visit-aggregation';
 import { pushDispatcherJob } from './jobs/push-dispatcher';
+import { exportProcessorJob } from './jobs/export-processor';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 const SIX_HOURS = 6 * 60 * 60 * 1000;
@@ -67,6 +68,7 @@ async function scheduleTick() { await safe('report-schedule-dispatcher', reportS
 async function pipelineScoringTick() { await safe('migration-pipeline-scoring', migrationPipelineScoringJob); }
 async function websiteVisitTick() { await safe('website-visit-aggregation', websiteVisitAggregationJob); }
 async function pushTick() { await safe('push-dispatcher', pushDispatcherJob); }
+async function exportTick() { await safe('export-processor', exportProcessorJob); }
 
 async function monthlyGuard() {
   const now = new Date();
@@ -146,3 +148,4 @@ setInterval(() => void qbrTick(), ONE_WEEK);
 setInterval(() => void pipelineScoringTick(), ONE_WEEK);
 setInterval(() => void websiteVisitTick(), ONE_DAY);
 setInterval(() => void pushTick(), ONE_MIN);
+setInterval(() => void exportTick(), FIVE_MIN);

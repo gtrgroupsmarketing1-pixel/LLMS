@@ -25,6 +25,7 @@
     "@lmms/push": "workspace:*",
     "@lmms/qbr": "workspace:*",
     "@lmms/reporting": "workspace:*",
+    "@lmms/residency": "workspace:*",
     "@lmms/reviews": "workspace:*",
     "@lmms/whatsapp": "workspace:*"
   },
