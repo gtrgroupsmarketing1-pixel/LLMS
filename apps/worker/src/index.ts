@@ -23,6 +23,7 @@ import { agencyDigestJob } from './jobs/agency-digest';
 import { qbrBuilderJob } from './jobs/qbr-builder';
 import { reportScheduleDispatcherJob } from './jobs/report-schedule-dispatcher';
 import { migrationPipelineScoringJob } from './jobs/migration-pipeline-scoring';
+import { websiteVisitAggregationJob } from './jobs/website-visit-aggregation';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 const SIX_HOURS = 6 * 60 * 60 * 1000;
@@ -63,6 +64,7 @@ async function agencyDigestTick() { await safe('agency-digest', agencyDigestJob)
 async function qbrTick() { await safe('qbr-builder', qbrBuilderJob); }
 async function scheduleTick() { await safe('report-schedule-dispatcher', reportScheduleDispatcherJob); }
 async function pipelineScoringTick() { await safe('migration-pipeline-scoring', migrationPipelineScoringJob); }
+async function websiteVisitTick() { await safe('website-visit-aggregation', websiteVisitAggregationJob); }
 
 async function monthlyGuard() {
   const now = new Date();
@@ -112,6 +114,7 @@ void adsSpendTick();
 void b2bTick();
 void billingDunningTick();
 void scheduleTick();
+void websiteVisitTick();
 
 setInterval(() => void healthTick(), ONE_DAY);
 setInterval(() => void erpTick(), SIX_HOURS);
@@ -138,3 +141,4 @@ setInterval(() => void billingGuard(), ONE_HOUR);
 setInterval(() => void digestGuard(), ONE_HOUR);
 setInterval(() => void qbrTick(), ONE_WEEK);
 setInterval(() => void pipelineScoringTick(), ONE_WEEK);
+setInterval(() => void websiteVisitTick(), ONE_DAY);
