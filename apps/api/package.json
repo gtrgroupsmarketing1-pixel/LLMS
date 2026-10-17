@@ -37,6 +37,7 @@
     "@lmms/reporting": "workspace:*",
     "@lmms/reviews": "workspace:*",
     "@lmms/segmentation": "workspace:*",
+    "@lmms/self-serve": "workspace:*",
     "@lmms/website": "workspace:*",
     "@lmms/whatsapp": "workspace:*"
   },
