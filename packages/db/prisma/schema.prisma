@@ -2241,3 +2241,92 @@ model WebsiteVisit {
   @@index([tenantId, createdAt])
   @@index([websiteId, createdAt])
 }
+
+// === V3.3 PWA+ additions ===
+
+enum PushSubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+enum PushNotificationKind {
+  APPROVAL_READY
+  APPROVAL_DECIDED
+  REVIEW_ESCALATION
+  REPORT_READY
+  INVOICE_SENT
+  INVOICE_PAID
+  MIGRATION_READY
+  SYSTEM_ALERT
+}
+
+enum PushNotificationStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  FAILED
+  READ
+}
+
+enum OfflineActionStatus {
+  PENDING
+  SYNCING
+  SYNCED
+  FAILED
+  EXPIRED
+}
+
+model PushSubscription {
+  id          String                 @id @default(uuid())
+  userId      String
+  tenantId    String?
+  endpoint    String                 @unique
+  p256dh      String
+  auth        String
+  userAgent   String?
+  status      PushSubscriptionStatus @default(ACTIVE)
+  lastUsedAt  DateTime?
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  @@index([userId, status])
+  @@index([tenantId])
+}
+
+model PushNotification {
+  id          String                 @id @default(uuid())
+  userId      String
+  tenantId    String?
+  kind        PushNotificationKind
+  title       String
+  body        String
+  data        Json?
+  status      PushNotificationStatus @default(QUEUED)
+  sentAt      DateTime?
+  deliveredAt DateTime?
+  readAt      DateTime?
+  failureReason String?
+  createdAt   DateTime               @default(now())
+
+  @@index([userId, status])
+  @@index([userId, readAt])
+  @@index([tenantId, createdAt])
+}
+
+model OfflineAction {
+  id            String              @id @default(uuid())
+  userId        String
+  tenantId      String?
+  action        String
+  payload       Json
+  clientId      String              @unique
+  status        OfflineActionStatus @default(PENDING)
+  syncedAt      DateTime?
+  failureReason String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([userId, status])
+  @@index([tenantId, createdAt])
+}
