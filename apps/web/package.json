@@ -17,6 +17,7 @@
     "@lmms/config": "workspace:*",
     "@lmms/journey-builder": "workspace:*",
     "@lmms/ui": "workspace:*",
+    "@lmms/website": "workspace:*",
     "clsx": "^2.1.1",
     "tailwind-merge": "^2.5.4",
     "class-variance-authority": "^0.7.0",

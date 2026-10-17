@@ -39,7 +39,7 @@ export default function WebsiteBuilderPage() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
-  const [templateKey, setTemplateKey] = useState(PAGE_TEMPLATES[0]?.key ?? '');
+  const [templateKey, setTemplateKey] = useState<string>(PAGE_TEMPLATES[0]?.key ?? '');
   const [newSlug, setNewSlug] = useState('home');
 
   async function load() {
@@ -209,7 +209,10 @@ export default function WebsiteBuilderPage() {
           ) : (
             <ul className="space-y-2">
               {pages.map((p) => (
-                <li key={p.id} className="flex items-center justify-between rounded border border-slate-200 p-3">
+                <li
+                  key={p.id}
+                  className="flex items-center justify-between rounded border border-slate-200 p-3"
+                >
                   <div>
                     <span className="font-medium">{p.titleEn}</span>
                     <span className="ml-2 text-xs text-slate-500">/{p.slug}</span>

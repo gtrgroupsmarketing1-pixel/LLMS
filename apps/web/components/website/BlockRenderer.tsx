@@ -13,6 +13,8 @@ interface BlockRendererProps {
   slug: string;
 }
 
+type R = Record<string, unknown>;
+
 export function BlockRenderer({ blocks, subdomain, slug }: BlockRendererProps) {
   return (
     <div className="space-y-16 py-12">
@@ -23,108 +25,116 @@ export function BlockRenderer({ blocks, subdomain, slug }: BlockRendererProps) {
   );
 }
 
+function s(v: unknown): string {
+  return v === null || v === undefined ? '' : String(v);
+}
+
+function num(v: unknown): number | undefined {
+  return typeof v === 'number' ? v : undefined;
+}
+
 function Block({ block, subdomain, slug }: { block: Block; subdomain: string; slug: string }) {
+  const b = block as R;
+
   switch (block.type) {
-    case 'hero':
+    case 'hero': {
+      const headline = s(b.headline);
+      const sub = s(b.subheadline);
+      const ctaLabel = s(b.ctaLabel);
+      const ctaHref = s(b.ctaHref);
       return (
         <section className="text-center px-4 py-16">
-          <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
-            {String(block.headline)}
-          </h1>
-          {block.subheadline && (
-            <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-              {String(block.subheadline)}
-            </p>
-          )}
-          {block.ctaLabel && block.ctaHref && (
+          <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">{headline}</h1>
+          {sub && <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">{sub}</p>}
+          {ctaLabel && ctaHref && (
             <a
-              href={String(block.ctaHref)}
+              href={ctaHref}
               className="inline-block bg-slate-900 text-white px-8 py-3 rounded-lg font-medium hover:bg-slate-800"
             >
-              {String(block.ctaLabel)}
+              {ctaLabel}
             </a>
           )}
         </section>
       );
+    }
 
-    case 'features':
+    case 'features': {
+      const title = s(b.title);
+      const items = Array.isArray(b.items) ? (b.items as Array<R>) : [];
       return (
         <section className="px-4 max-w-5xl mx-auto">
-          {block.title && (
-            <h2 className="text-3xl font-bold text-center mb-12">{String(block.title)}</h2>
-          )}
+          {title && <h2 className="text-3xl font-bold text-center mb-12">{title}</h2>}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {(block.items as Array<{ title: string; description?: string; icon?: string }>).map(
-              (item, i) => (
-                <div key={i} className="text-center">
-                  {item.icon && <div className="text-4xl mb-4">{item.icon}</div>}
-                  <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                  {item.description && (
-                    <p className="text-slate-600">{item.description}</p>
-                  )}
-                </div>
-              ),
-            )}
+            {items.map((item, i) => (
+              <div key={i} className="text-center">
+                {s(item.icon) && <div className="text-4xl mb-4">{s(item.icon)}</div>}
+                <h3 className="text-xl font-semibold mb-2">{s(item.title)}</h3>
+                {s(item.description) && (
+                  <p className="text-slate-600">{s(item.description)}</p>
+                )}
+              </div>
+            ))}
           </div>
         </section>
       );
+    }
 
-    case 'text':
+    case 'text': {
+      const content = s(b.content);
+      const align = b.align === 'center' ? 'text-center' : b.align === 'end' ? 'text-right' : '';
       return (
         <section className="px-4 max-w-3xl mx-auto">
-          <div
-            className={`text-lg text-slate-700 ${
-              block.align === 'center' ? 'text-center' : ''
-            }`}
-          >
-            {String(block.content)}
-          </div>
+          <div className={`text-lg text-slate-700 ${align}`}>{content}</div>
         </section>
       );
+    }
 
-    case 'image':
+    case 'image': {
+      const url = s(b.url);
+      const alt = s(b.alt);
+      const caption = s(b.caption);
       return (
         <section className="px-4 max-w-5xl mx-auto">
-          <img
-            src={String(block.url)}
-            alt={String(block.alt)}
-            className="w-full rounded-lg"
-          />
-          {block.caption && (
-            <p className="text-sm text-slate-500 text-center mt-2">
-              {String(block.caption)}
-            </p>
+          <img src={url} alt={alt} className="w-full rounded-lg" />
+          {caption && (
+            <p className="text-sm text-slate-500 text-center mt-2">{caption}</p>
           )}
         </section>
       );
+    }
 
-    case 'cta':
+    case 'cta': {
+      const headline = s(b.headline);
+      const sub = s(b.subheadline);
+      const label = s(b.buttonLabel);
+      const href = s(b.buttonHref);
       return (
         <section className="bg-slate-900 text-white py-16 px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4">{String(block.headline)}</h2>
-            {block.subheadline && (
-              <p className="text-lg text-slate-300 mb-8">{String(block.subheadline)}</p>
-            )}
+            <h2 className="text-3xl font-bold mb-4">{headline}</h2>
+            {sub && <p className="text-lg text-slate-300 mb-8">{sub}</p>}
             <a
-              href={String(block.buttonHref)}
+              href={href}
               className="inline-block bg-white text-slate-900 px-8 py-3 rounded-lg font-medium hover:bg-slate-100"
             >
-              {String(block.buttonLabel)}
+              {label}
             </a>
           </div>
         </section>
       );
+    }
 
     case 'form': {
-      const fields = block.fields as string[];
+      const title = s(b.title);
+      const description = s(b.description);
+      const submitLabel = s(b.submitLabel) || 'Submit';
+      const successMessage = s(b.successMessage) || 'Thank you!';
+      const fields = Array.isArray(b.fields) ? (b.fields as string[]) : [];
       return (
         <section className="px-4 max-w-lg mx-auto" id="book">
-          {block.title && (
-            <h2 className="text-3xl font-bold text-center mb-4">{String(block.title)}</h2>
-          )}
-          {block.description && (
-            <p className="text-slate-600 text-center mb-8">{String(block.description)}</p>
+          {title && <h2 className="text-3xl font-bold text-center mb-4">{title}</h2>}
+          {description && (
+            <p className="text-slate-600 text-center mb-8">{description}</p>
           )}
           <form
             onSubmit={async (e) => {
@@ -147,7 +157,7 @@ function Block({ block, subdomain, slug }: { block: Block; subdomain: string; sl
               });
 
               (e.target as HTMLFormElement).reset();
-              alert(String(block.successMessage ?? 'Thank you!'));
+              alert(successMessage);
             }}
             className="space-y-4"
           >
@@ -175,66 +185,70 @@ function Block({ block, subdomain, slug }: { block: Block; subdomain: string; sl
               type="submit"
               className="w-full bg-slate-900 text-white py-3 rounded-lg font-medium hover:bg-slate-800"
             >
-              {String(block.submitLabel ?? 'Submit')}
+              {submitLabel}
             </button>
           </form>
         </section>
       );
     }
 
-    case 'testimonials':
+    case 'testimonials': {
+      const title = s(b.title);
+      const items = Array.isArray(b.items) ? (b.items as Array<R>) : [];
       return (
         <section className="px-4 max-w-5xl mx-auto">
-          {block.title && (
-            <h2 className="text-3xl font-bold text-center mb-12">{String(block.title)}</h2>
-          )}
+          {title && <h2 className="text-3xl font-bold text-center mb-12">{title}</h2>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {(block.items as Array<{ quote: string; author: string; rating?: number }>).map(
-              (item, i) => (
+            {items.map((item, i) => {
+              const rating = num(item.rating);
+              return (
                 <div key={i} className="bg-slate-50 p-6 rounded-lg">
-                  {item.rating && (
+                  {rating && (
                     <div className="text-amber-500 mb-2">
-                      {'★'.repeat(item.rating)}{'☆'.repeat(5 - item.rating)}
+                      {'★'.repeat(rating)}{'☆'.repeat(5 - rating)}
                     </div>
                   )}
-                  <p className="text-slate-700 italic mb-4">&ldquo;{item.quote}&rdquo;</p>
-                  <p className="text-sm text-slate-500">— {item.author}</p>
+                  <p className="text-slate-700 italic mb-4">&ldquo;{s(item.quote)}&rdquo;</p>
+                  <p className="text-sm text-slate-500">— {s(item.author)}</p>
                 </div>
-              ),
-            )}
+              );
+            })}
           </div>
         </section>
       );
+    }
 
-    case 'pricing':
+    case 'pricing': {
+      const title = s(b.title);
+      const items = Array.isArray(b.items) ? (b.items as Array<R>) : [];
       return (
         <section className="px-4 max-w-5xl mx-auto">
-          {block.title && (
-            <h2 className="text-3xl font-bold text-center mb-12">{String(block.title)}</h2>
-          )}
+          {title && <h2 className="text-3xl font-bold text-center mb-12">{title}</h2>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {(block.items as Array<{ name: string; price: string; unit?: string; features?: string[]; featured?: boolean }>).map(
-              (item, i) => (
+            {items.map((item, i) => {
+              const featured = item.featured === true;
+              const features = Array.isArray(item.features)
+                ? (item.features as string[])
+                : [];
+              return (
                 <div
                   key={i}
                   className={`p-6 rounded-lg border-2 ${
-                    item.featured
-                      ? 'border-slate-900 bg-slate-50'
-                      : 'border-slate-200'
+                    featured ? 'border-slate-900 bg-slate-50' : 'border-slate-200'
                   }`}
                 >
-                  <h3 className="text-xl font-bold mb-2">{item.name}</h3>
+                  <h3 className="text-xl font-bold mb-2">{s(item.name)}</h3>
                   <div className="text-3xl font-bold mb-1">
-                    {item.price}
-                    {item.unit && (
+                    {s(item.price)}
+                    {s(item.unit) && (
                       <span className="text-base font-normal text-slate-500 ml-1">
-                        {item.unit}
+                        {s(item.unit)}
                       </span>
                     )}
                   </div>
-                  {item.features && (
+                  {features.length > 0 && (
                     <ul className="mt-4 space-y-1">
-                      {item.features.map((f, j) => (
+                      {features.map((f, j) => (
                         <li key={j} className="text-slate-600 text-sm">
                           ✓ {f}
                         </li>
@@ -242,83 +256,102 @@ function Block({ block, subdomain, slug }: { block: Block; subdomain: string; sl
                     </ul>
                   )}
                 </div>
-              ),
-            )}
+              );
+            })}
           </div>
         </section>
       );
+    }
 
-    case 'faq':
+    case 'faq': {
+      const title = s(b.title);
+      const items = Array.isArray(b.items) ? (b.items as Array<R>) : [];
       return (
         <section className="px-4 max-w-3xl mx-auto">
-          {block.title && (
-            <h2 className="text-3xl font-bold text-center mb-12">{String(block.title)}</h2>
-          )}
+          {title && <h2 className="text-3xl font-bold text-center mb-12">{title}</h2>}
           <div className="space-y-4">
-            {(block.items as Array<{ question: string; answer: string }>).map((item, i) => (
+            {items.map((item, i) => (
               <details key={i} className="bg-slate-50 p-4 rounded-lg">
-                <summary className="font-medium cursor-pointer">{item.question}</summary>
-                <p className="mt-2 text-slate-600">{item.answer}</p>
+                <summary className="font-medium cursor-pointer">{s(item.question)}</summary>
+                <p className="mt-2 text-slate-600">{s(item.answer)}</p>
               </details>
             ))}
           </div>
         </section>
       );
+    }
 
-    case 'gallery':
+    case 'gallery': {
+      const images = Array.isArray(b.images) ? (b.images as Array<R>) : [];
       return (
         <section className="px-4 max-w-5xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {(block.images as Array<{ url: string; alt: string }>).map((img, i) => (
+            {images.map((img, i) => (
               <img
                 key={i}
-                src={img.url}
-                alt={img.alt}
+                src={s(img.url)}
+                alt={s(img.alt)}
                 className="w-full aspect-square object-cover rounded-lg"
               />
             ))}
           </div>
         </section>
       );
+    }
 
-    case 'contact':
+    case 'contact': {
+      const title = s(b.title);
+      const phone = s(b.phone);
+      const email = s(b.email);
+      const address = s(b.address);
       return (
         <section className="px-4 max-w-3xl mx-auto text-center">
-          {block.title && <h2 className="text-3xl font-bold mb-8">{String(block.title)}</h2>}
+          {title && <h2 className="text-3xl font-bold mb-8">{title}</h2>}
           <div className="space-y-2 text-slate-700">
-            {block.phone && <p>📞 {String(block.phone)}</p>}
-            {block.email && <p>✉️ {String(block.email)}</p>}
-            {block.address && <p>📍 {String(block.address)}</p>}
+            {phone && <p>📞 {phone}</p>}
+            {email && <p>✉️ {email}</p>}
+            {address && <p>📍 {address}</p>}
           </div>
         </section>
       );
+    }
 
-    case 'footer':
+    case 'footer': {
+      const copyright = s(b.copyright);
+      const links = Array.isArray(b.links) ? (b.links as Array<R>) : [];
+      const socials = Array.isArray(b.socials) ? (b.socials as Array<R>) : [];
       return (
         <footer className="border-t border-slate-200 py-8 px-4 text-center">
-          {block.links && (
+          {links.length > 0 && (
             <div className="flex flex-wrap justify-center gap-4 mb-4">
-              {(block.links as Array<{ label: string; href: string }>).map((link, i) => (
-                <a key={i} href={link.href} className="text-sm text-slate-500 hover:text-slate-900">
-                  {link.label}
+              {links.map((link, i) => (
+                <a
+                  key={i}
+                  href={s(link.href)}
+                  className="text-sm text-slate-500 hover:text-slate-900"
+                >
+                  {s(link.label)}
                 </a>
               ))}
             </div>
           )}
-          {block.socials && (
+          {socials.length > 0 && (
             <div className="flex justify-center gap-4 mb-4">
-              {(block.socials as Array<{ network: string; href: string }>).map((s, i) => (
-                <a key={i} href={s.href} className="text-slate-500 hover:text-slate-900">
-                  {s.network}
+              {socials.map((soc, i) => (
+                <a
+                  key={i}
+                  href={s(soc.href)}
+                  className="text-slate-500 hover:text-slate-900"
+                >
+                  {s(soc.network)}
                 </a>
               ))}
             </div>
           )}
-          {block.copyright && (
-            <p className="text-xs text-slate-400">{String(block.copyright)}</p>
-          )}
+          {copyright && <p className="text-xs text-slate-400">{copyright}</p>}
         </footer>
       );
+    }
 
     default:
       return null;
