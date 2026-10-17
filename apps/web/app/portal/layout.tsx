@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Button } from '@lmms/ui';
-import { getAccessToken } from '../../lib/portal/session';
+import { Badge, Button } from '@lmms/ui';
+import { authedFetch, getAccessToken } from '../../lib/portal/session';
 
 const NAV = [
   { href: '/portal', labelAr: 'الرئيسية', labelEn: 'Home', icon: '🏠' },
@@ -17,6 +17,7 @@ const NAV = [
   { href: '/portal/reports', labelAr: 'التقارير', labelEn: 'Reports', icon: '📊' },
   { href: '/portal/invoices', labelAr: 'الفواتير', labelEn: 'Invoices', icon: '🧾' },
   { href: '/portal/data-sources', labelAr: 'البيانات', labelEn: 'Data', icon: '🗄️' },
+  { href: '/portal/notifications', labelAr: 'الإشعارات', labelEn: 'Notifications', icon: '🔔' },
   { href: '/portal/support', labelAr: 'الدعم', labelEn: 'Support', icon: '🆘' },
 ];
 
@@ -27,9 +28,10 @@ export default function PortalLayout({
 }) {
   const pathname = usePathname();
   const [lang, setLang] = useState<'ar' | 'en'>('ar');
+  const [unread, setUnread] = useState(0);
 
   useEffect(() => {
-    if (pathname === '/portal/login') return;
+    if (pathname === '/portal/login' || pathname === '/portal/offline') return;
     if (!getAccessToken()) {
       window.location.href = '/portal/login';
       return;
@@ -38,9 +40,16 @@ export default function PortalLayout({
     setLang(stored);
     document.documentElement.lang = stored;
     document.documentElement.dir = stored === 'ar' ? 'rtl' : 'ltr';
+
+    authedFetch('/api/push/portal/notifications/unread-count')
+      .then((r) => (r.ok ? r.json() : { count: 0 }))
+      .then((d) => setUnread((d as { count: number }).count))
+      .catch(() => undefined);
   }, [pathname]);
 
-  if (pathname === '/portal/login') return <>{children}</>;
+  if (pathname === '/portal/login' || pathname === '/portal/offline') {
+    return <>{children}</>;
+  }
 
   function toggleLang() {
     const next = lang === 'ar' ? 'en' : 'ar';
@@ -54,14 +63,27 @@ export default function PortalLayout({
     <div className="min-h-screen flex flex-col bg-slate-50">
       <header className="sticky top-0 z-10 flex items-center justify-between bg-slate-900 px-4 py-3 text-white">
         <strong>LMMS</strong>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={toggleLang}
-          className="border-slate-600 bg-transparent text-white hover:bg-slate-800"
-        >
-          {lang === 'ar' ? 'EN' : 'ع'}
-        </Button>
+        <div className="flex items-center gap-2">
+          {unread > 0 && (
+            <Link
+              href="/portal/notifications"
+              className="relative inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-600 text-white no-underline"
+            >
+              🔔
+              <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold">
+                {unread > 9 ? '9+' : unread}
+              </span>
+            </Link>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleLang}
+            className="border-slate-600 bg-transparent text-white hover:bg-slate-800"
+          >
+            {lang === 'ar' ? 'EN' : 'ع'}
+          </Button>
+        </div>
       </header>
 
       <div className="flex-1 pb-20">{children}</div>
@@ -73,7 +95,7 @@ export default function PortalLayout({
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-shrink-0 basis-1/5 flex-col items-center px-2 py-2 text-[10px] no-underline ${
+              className={`flex flex-shrink-0 basis-1/6 flex-col items-center px-2 py-2 text-[10px] no-underline ${
                 active ? 'font-bold text-slate-900' : 'text-slate-500'
               }`}
             >

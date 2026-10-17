@@ -27,6 +27,7 @@ import { billingRouter } from './routes/billing.routes';
 import { agencyRouter } from './routes/agency.routes';
 import { qbrRouter } from './routes/qbr.routes';
 import { websiteRouter } from './routes/website.routes';
+import { pushRouter } from './routes/push.routes';
 
 export function createApp() {
   const app = express();
@@ -60,6 +61,7 @@ export function createApp() {
   app.use('/agency', agencyRouter);
   app.use('/qbr', tenantScopeGuard, qbrRouter);
   app.use('/website', websiteRouter);
+  app.use('/push', pushRouter);
 
   app.use(errorHandler);
   return app;
