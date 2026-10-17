@@ -25,7 +25,7 @@ export async function checkLimit(
 
   if (type === 'campaigns') {
     const current = await prisma.campaign.count({
-      where: { tenantId, status: { in: ['ACTIVE', 'SENT'] } },
+      where: { tenantId, status: { in: ['SCHEDULED', 'SENDING', 'SENT'] } },
     });
     return {
       allowed: current < config.maxCampaigns,
