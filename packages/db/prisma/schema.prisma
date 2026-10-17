@@ -82,6 +82,7 @@ model Tenant {
   upgradeReady    Boolean       @default(false)
   greenTickStatus String        @default("NOT_APPLIED")
   resellerId      String?
+  region          DataRegion    @default(UAE)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
@@ -89,6 +90,7 @@ model Tenant {
 
   @@index([country, status])
   @@index([resellerId])
+  @@index([region])
 }
 
 model User {
@@ -2437,4 +2439,45 @@ model WhiteLabelConfig {
   updatedAt     DateTime @updatedAt
 
   reseller Reseller @relation(fields: [resellerId], references: [id], onDelete: Cascade)
+}
+
+// === V3.6 Data Residency additions ===
+
+enum DataRegion {
+  UAE
+  KSA
+}
+
+enum DataExportStatus {
+  REQUESTED
+  PROCESSING
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+model RegionConfig {
+  id            String     @id @default(uuid())
+  region        DataRegion @unique
+  dbUrl         String
+  storageBucket String
+  backupPolicy  Json?
+  isActive      Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model DataExportRequest {
+  id          String           @id @default(uuid())
+  tenantId    String
+  requestedBy String
+  status      DataExportStatus @default(REQUESTED)
+  format      String           @default("JSON")
+  downloadUrl String?
+  expiresAt   DateTime?
+  failureReason String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([tenantId, status])
 }
