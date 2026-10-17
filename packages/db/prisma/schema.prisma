@@ -81,10 +81,14 @@ model Tenant {
   churnRisk       Boolean       @default(false)
   upgradeReady    Boolean       @default(false)
   greenTickStatus String        @default("NOT_APPLIED")
+  resellerId      String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
+  reseller        Reseller?     @relation(fields: [resellerId], references: [id])
+
   @@index([country, status])
+  @@index([resellerId])
 }
 
 model User {
@@ -2395,4 +2399,42 @@ model OnboardingTask {
 
   @@unique([tenantId, key])
   @@index([tenantId, status])
+}
+
+// === V3.5 White-Label / Reseller Mode additions ===
+
+enum ResellerStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+model Reseller {
+  id            String         @id @default(uuid())
+  name          String
+  domain        String         @unique
+  status        ResellerStatus @default(PENDING)
+  commissionPct Decimal        @db.Decimal(5, 2) @default(20.00)
+  apiKey        String         @unique
+  createdBy     String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  tenants     Tenant[]
+  whiteLabel  WhiteLabelConfig?
+}
+
+model WhiteLabelConfig {
+  id            String   @id @default(uuid())
+  resellerId    String   @unique
+  logoUrl       String?
+  faviconUrl    String?
+  primaryColor  String   @default("#0f172a")
+  supportEmail  String?
+  customEmailFrom String?
+  emailFooter   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  reseller Reseller @relation(fields: [resellerId], references: [id], onDelete: Cascade)
 }
