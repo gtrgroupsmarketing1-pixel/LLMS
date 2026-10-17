@@ -2134,3 +2134,110 @@ model ConversionEvent {
   @@index([tenantId, type, occurredAt])
   @@index([tenantId, pitchId])
 }
+
+// === V3.2 Website & Landing Page Builder additions ===
+
+enum WebsiteStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+}
+
+enum WebsitePageStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum WebsiteLeadConsent {
+  PENDING
+  OPT_IN
+  OPT_OUT
+}
+
+model Website {
+  id            String        @id @default(uuid())
+  tenantId      String        @unique
+  subdomain     String        @unique
+  customDomain  String?       @unique
+  status        WebsiteStatus @default(DRAFT)
+  theme         Json?
+  brandKitId    String?
+  seoDefaults   Json?
+  publishedAt   DateTime?
+  createdBy     String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  pages WebsitePage[]
+  leads WebsiteLead[]
+
+  @@index([tenantId, status])
+}
+
+model WebsitePage {
+  id           String            @id @default(uuid())
+  tenantId     String
+  websiteId    String
+  slug         String
+  titleEn      String
+  titleAr      String?
+  blocks       Json
+  seo          Json?
+  status       WebsitePageStatus @default(DRAFT)
+  publishedAt  DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  website Website       @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  leads   WebsiteLead[]
+  visits  WebsiteVisit[]
+
+  @@unique([websiteId, slug])
+  @@index([tenantId, status])
+}
+
+model WebsiteLead {
+  id            String              @id @default(uuid())
+  tenantId      String
+  websiteId     String
+  pageId        String?
+  name          String?
+  phone         String?
+  email         String?
+  zone          String?
+  message       String?
+  utmSource     String?
+  utmMedium     String?
+  utmCampaign   String?
+  promoCode     String?
+  consentStatus WebsiteLeadConsent  @default(PENDING)
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime            @default(now())
+
+  website Website      @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  page    WebsitePage? @relation(fields: [pageId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, consentStatus])
+  @@index([tenantId, createdAt])
+  @@index([websiteId, createdAt])
+}
+
+model WebsiteVisit {
+  id         String   @id @default(uuid())
+  tenantId   String
+  websiteId  String
+  pageId     String
+  path       String
+  referrer   String?
+  country    String?
+  utmSource  String?
+  utmMedium  String?
+  utmCampaign String?
+  createdAt  DateTime @default(now())
+
+  page WebsitePage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt])
+  @@index([websiteId, createdAt])
+}
