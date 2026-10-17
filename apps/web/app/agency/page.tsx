@@ -93,6 +93,12 @@ export default function AgencyOverviewPage() {
             Self-Serve Signups
           </Link>
           <Link
+            href="/agency/resellers"
+            className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50"
+          >
+            Resellers
+          </Link>
+          <Link
             href="/agency/tools"
             className="text-sm rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50"
           >

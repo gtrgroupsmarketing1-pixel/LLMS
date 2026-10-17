@@ -29,6 +29,7 @@ import { qbrRouter } from './routes/qbr.routes';
 import { websiteRouter } from './routes/website.routes';
 import { pushRouter } from './routes/push.routes';
 import { selfServeRouter } from './routes/self-serve.routes';
+import { resellerRouter } from './routes/reseller.routes';
 
 export function createApp() {
   const app = express();
@@ -64,6 +65,7 @@ export function createApp() {
   app.use('/website', websiteRouter);
   app.use('/push', pushRouter);
   app.use('/self-serve', selfServeRouter);
+  app.use('/resellers', resellerRouter);
 
   app.use(errorHandler);
   return app;
