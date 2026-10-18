@@ -1,5 +1,4 @@
 import { MODULE_CATALOG, getModuleDef } from './catalog';
-import type { TenantModule } from '@prisma/client'; // Note: if this causes errors, use a local interface
 
 export interface ValidationResult {
   valid: boolean;
@@ -49,3 +48,5 @@ export function canDisableModule(
 
   return { valid: true };
 }
+
+void MODULE_CATALOG;
