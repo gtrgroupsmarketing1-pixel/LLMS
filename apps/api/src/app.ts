@@ -32,6 +32,7 @@ import { selfServeRouter } from './routes/self-serve.routes';
 import { resellerRouter } from './routes/reseller.routes';
 import { residencyRouter } from './routes/residency.routes';
 import { marketplaceRouter } from './routes/marketplace.routes';
+import { erpMigrationRouter } from './routes/erp-migration.routes';
 
 export function createApp() {
   const app = express();
@@ -70,6 +71,7 @@ export function createApp() {
   app.use('/resellers', resellerRouter);
   app.use('/residency', residencyRouter);
   app.use('/marketplace', marketplaceRouter);
+  app.use('/erp-migration', erpMigrationRouter);
 
   app.use(errorHandler);
   return app;

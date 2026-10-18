@@ -28,6 +28,7 @@
     "@lmms/content-calendar": "workspace:*",
     "@lmms/contracts": "workspace:*",
     "@lmms/db": "workspace:*",
+    "@lmms/erp-migration": "workspace:*",
     "@lmms/ingestion": "workspace:*",
     "@lmms/journey-builder": "workspace:*",
     "@lmms/marketplace": "workspace:*",
