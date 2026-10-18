@@ -2578,3 +2578,27 @@ model CompetitorImportRow {
 
   @@index([jobId, status])
 }
+
+// === V3.9 Pluggable Module Architecture ===
+
+model ModuleDefinition {
+  id           String   @id @default(uuid())
+  key          String   @unique // e.g., "WEBSITE_BUILDER", "ADS_MANAGEMENT"
+  name         String
+  description  String?
+  isCore       Boolean  @default(false) // Core modules cannot be disabled
+  dependencies Json?    // Array of strings: ["CLIENT_PORTAL"]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model TenantModule {
+  id        String   @id @default(uuid())
+  tenantId  String
+  moduleKey String
+  enabled   Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, moduleKey])
+  @@index([tenantId, enabled])
+}
