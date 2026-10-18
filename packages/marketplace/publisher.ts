@@ -1,13 +1,19 @@
 import { prisma } from '@lmms/db';
 import { logAudit } from '@lmms/audit';
-import type { MarketplaceCategory } from '@lmms/db';
+
+type MarketplaceCategory =
+  | 'CAMPAIGN'
+  | 'JOURNEY'
+  | 'WEBSITE_PAGE'
+  | 'CONTENT_CARD'
+  | 'AUTOMATION';
 
 export interface PublishTemplateInput {
   actorId: string;
   name: string;
   description?: string;
   category: MarketplaceCategory;
-  sourceId: string; // ID of the WebsitePage, Journey, etc.
+  sourceId: string;
   sourceType: 'WEBSITE_PAGE' | 'JOURNEY' | 'CAMPAIGN';
 }
 
@@ -26,7 +32,7 @@ export async function publishTemplate(input: PublishTemplateInput) {
       titleAr: page.titleAr,
       blocks: page.blocks,
       seo: page.seo,
-      theme: page.website.theme, // optional but nice
+      theme: page.website.theme,
     };
   } else if (input.sourceType === 'JOURNEY') {
     const journey = await prisma.journey.findUnique({
@@ -50,8 +56,7 @@ export async function publishTemplate(input: PublishTemplateInput) {
     payload = {
       name: campaign.name,
       channel: campaign.channel,
-      templateId: null, // We don't copy the exact template, just the structure
-      // Note: In a real system, we'd need to deep-copy the template group too.
+      templateId: null,
     };
   }
 
