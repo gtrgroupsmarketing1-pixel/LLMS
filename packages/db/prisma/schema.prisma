@@ -2481,3 +2481,51 @@ model DataExportRequest {
 
   @@index([tenantId, status])
 }
+
+// === V3.7 Template Marketplace additions ===
+
+enum MarketplaceCategory {
+  CAMPAIGN
+  JOURNEY
+  WEBSITE_PAGE
+  CONTENT_CARD
+  AUTOMATION
+}
+
+enum MarketplaceStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model MarketplaceTemplate {
+  id            String              @id @default(uuid())
+  name          String
+  description   String?
+  category      MarketplaceCategory
+  status        MarketplaceStatus   @default(DRAFT)
+  payload       Json                // The actual template data (blocks, journey graph, etc)
+  authorId      String
+  installCount  Int                 @default(0)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  installs TemplateInstall[]
+
+  @@index([category, status])
+  @@index([installCount])
+}
+
+model TemplateInstall {
+  id           String   @id @default(uuid())
+  tenantId     String
+  templateId   String
+  installedBy  String
+  createdAt    DateTime @default(now())
+
+  template MarketplaceTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, templateId])
+  @@index([tenantId])
+  @@index([templateId])
+}
