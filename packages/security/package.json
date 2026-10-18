@@ -1,0 +1,16 @@
+{
+  "name": "@lmms/security",
+  "version": "0.0.1",
+  "private": true,
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "audit": "tsx rbac-audit.ts && tsx secret-scan.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "tsx": "^4.19.1"
+  }
+}
