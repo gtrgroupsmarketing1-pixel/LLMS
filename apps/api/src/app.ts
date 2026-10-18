@@ -2,6 +2,7 @@ import express from 'express';
 import { errorHandler } from './middleware/error';
 import { requestIdMiddleware } from './middleware/requestId';
 import { globalRateLimit } from './middleware/rateLimit';
+import { securityHeaders } from './middleware/security';
 import { tenantScopeGuard } from './middleware/tenantScope';
 import { authRouter } from './routes/auth.routes';
 import { tenantRouter } from './routes/tenant.routes';
@@ -37,7 +38,16 @@ import { modulesRouter } from './routes/modules.routes';
 
 export function createApp() {
   const app = express();
-  app.use(express.json({ limit: '10mb' }));
+  
+  app.use(securityHeaders);
+  
+  app.use(express.json({ 
+    limit: '10mb',
+    verify: (req: any, res, buf) => {
+      req.rawBody = buf.toString();
+    }
+  }));
+
   app.use(requestIdMiddleware);
   app.use(globalRateLimit);
 
