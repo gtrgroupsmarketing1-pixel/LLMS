@@ -34,6 +34,7 @@
     "@lmms/marketplace": "workspace:*",
     "@lmms/migration": "workspace:*",
     "@lmms/migration-pipeline": "workspace:*",
+    "@lmms/modules": "workspace:*",
     "@lmms/push": "workspace:*",
     "@lmms/qbr": "workspace:*",
     "@lmms/reporting": "workspace:*",
