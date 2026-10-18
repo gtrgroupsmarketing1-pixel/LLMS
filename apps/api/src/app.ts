@@ -31,6 +31,7 @@ import { pushRouter } from './routes/push.routes';
 import { selfServeRouter } from './routes/self-serve.routes';
 import { resellerRouter } from './routes/reseller.routes';
 import { residencyRouter } from './routes/residency.routes';
+import { marketplaceRouter } from './routes/marketplace.routes';
 
 export function createApp() {
   const app = express();
@@ -68,6 +69,7 @@ export function createApp() {
   app.use('/self-serve', selfServeRouter);
   app.use('/resellers', resellerRouter);
   app.use('/residency', residencyRouter);
+  app.use('/marketplace', marketplaceRouter);
 
   app.use(errorHandler);
   return app;

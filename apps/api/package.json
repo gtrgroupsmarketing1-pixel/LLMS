@@ -30,6 +30,7 @@
     "@lmms/db": "workspace:*",
     "@lmms/ingestion": "workspace:*",
     "@lmms/journey-builder": "workspace:*",
+    "@lmms/marketplace": "workspace:*",
     "@lmms/migration": "workspace:*",
     "@lmms/migration-pipeline": "workspace:*",
     "@lmms/push": "workspace:*",
