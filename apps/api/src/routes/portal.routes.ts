@@ -71,7 +71,9 @@ portalRouter.get('/reviews', async (req, res, next) => {
 
 portalRouter.get('/messages', async (req, res, next) => {
   try {
-    res.json(await svc.listMessages(req.auth!.tenantId!));
+    const cursor = req.query.cursor ? String(req.query.cursor) : undefined;
+    const limit = req.query.limit ? Number(req.query.limit) : 50;
+    res.json(await svc.listMessages(req.auth!.tenantId!, cursor, limit));
   } catch (e) { next(e); }
 });
 

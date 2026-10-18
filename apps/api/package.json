@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "test": "vitest run",
@@ -41,6 +42,7 @@
     "@lmms/reseller": "workspace:*",
     "@lmms/residency": "workspace:*",
     "@lmms/reviews": "workspace:*",
+    "@lmms/scale": "workspace:*",
     "@lmms/segmentation": "workspace:*",
     "@lmms/self-serve": "workspace:*",
     "@lmms/website": "workspace:*",

@@ -1,5 +1,6 @@
 import { prisma } from '@lmms/db';
 import { logAudit } from '@lmms/audit';
+import { paginate } from '@lmms/scale';
 
 export async function getPortalDashboard(tenantId: string) {
   const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
@@ -131,12 +132,15 @@ export async function listReviews(_tenantId: string) {
   }>;
 }
 
-export async function listMessages(tenantId: string) {
-  return prisma.clientMessageInbox.findMany({
-    where: { tenantId },
-    orderBy: { createdAt: 'desc' },
-    take: 100,
-  });
+export async function listMessages(tenantId: string, cursor?: string, limit = 50) {
+  return paginate(
+    prisma.clientMessageInbox,
+    {
+      where: { tenantId },
+      orderBy: { createdAt: 'desc' },
+    },
+    { cursor: cursor || null, limit },
+  );
 }
 
 export async function replyMessage(

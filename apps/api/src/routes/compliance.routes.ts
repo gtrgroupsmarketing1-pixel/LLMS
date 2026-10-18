@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { requireAuth, requireAgency } from '../middleware/auth';
 import { prisma } from '@lmms/db';
 import { logAudit, verifyAuditChain, exportAuditLog } from '@lmms/audit';
+import { paginate } from '@lmms/scale';
 import {
   processOptOut,
   createErasureRequest,
@@ -306,18 +307,22 @@ complianceRouter.get(
 
 complianceRouter.get(
   '/tenants/:tenantId/audit',
+  requireAuth,
   requireAgency('OWNER', 'ADMIN'),
   async (req, res, next) => {
     try {
-      const since = req.query.since
-        ? new Date(String(req.query.since))
-        : undefined;
-      const until = req.query.until
-        ? new Date(String(req.query.until))
-        : undefined;
-      res.json(
-        await exportAuditLog(req.params.tenantId as string, since, until),
+      const cursor = req.query.cursor ? String(req.query.cursor) : undefined;
+      const limit = req.query.limit ? Number(req.query.limit) : 50;
+      
+      const page = await paginate(
+        prisma.auditLog,
+        {
+          where: { tenantId: req.params.tenantId as string },
+          orderBy: { timestamp: 'desc' },
+        },
+        { cursor: cursor || null, limit },
       );
+      res.json(page);
     } catch (e) { next(e); }
   },
 );

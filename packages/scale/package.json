@@ -4,12 +4,16 @@
   "private": true,
   "main": "index.ts",
   "types": "index.ts",
-  "scripts": { "typecheck": "tsc --noEmit" },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "load-test": "tsx load-test.ts"
+  },
   "dependencies": {
     "@lmms/db": "workspace:*",
     "@lmms/config": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "tsx": "^4.19.1"
   }
 }
