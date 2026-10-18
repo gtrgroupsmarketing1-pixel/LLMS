@@ -252,6 +252,7 @@ model AuditLog {
 
   @@index([tenantId, timestamp])
   @@index([tenantId, action])
+  @@index([tenantId, actor, timestamp])
 }
 
 // === V1.3 Data Ingestion additions ===
@@ -282,6 +283,7 @@ model EndCustomer {
   @@unique([tenantId, phone])
   @@index([tenantId, email])
   @@index([tenantId, needsReview])
+  @@index([tenantId, createdAt])
 }
 
 model Order {
@@ -493,6 +495,8 @@ model Message {
 
   @@index([tenantId, campaignId, status])
   @@index([tenantId, customerId, status])
+  @@index([tenantId, sentAt])
+  @@index([tenantId, status, sentAt])
 }
 
 model PromoCode {
