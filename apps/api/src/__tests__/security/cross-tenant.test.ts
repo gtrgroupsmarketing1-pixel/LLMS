@@ -81,8 +81,11 @@ describe('cross-tenant isolation', () => {
 
     const r = await request(app).get('/portal/messages').set('Authorization', `Bearer ${token}`);
     expect(r.status).toBe(200);
-    expect(Array.isArray(r.body)).toBe(true);
-    expect(r.body.some((m: { tenantId: string }) => m.tenantId === tenantB.id)).toBe(false);
+    
+    // The endpoint is paginated: returns { data: [], nextCursor, hasMore }
+    const body = r.body as { data: Array<{ tenantId: string }>; nextCursor: string | null; hasMore: boolean };
+    expect(Array.isArray(body.data)).toBe(true);
+    expect(body.data.some((m) => m.tenantId === tenantB.id)).toBe(false);
   });
 
   it('direct prisma query with wrong tenantId returns nothing', async () => {
