@@ -37,6 +37,7 @@ import { residencyRouter } from './routes/residency.routes';
 import { marketplaceRouter } from './routes/marketplace.routes';
 import { erpMigrationRouter } from './routes/erp-migration.routes';
 import { modulesRouter } from './routes/modules.routes';
+import { whatsappRouter } from './routes/whatsapp.routes';
 
 export function createApp() {
   const app = express();
@@ -87,6 +88,7 @@ export function createApp() {
   app.use('/marketplace', marketplaceRouter);
   app.use('/erp-migration', erpMigrationRouter);
   app.use('/modules', modulesRouter);
+  app.use('/whatsapp', whatsappRouter);
 
   app.use(errorTracker);
   app.use(errorHandler);

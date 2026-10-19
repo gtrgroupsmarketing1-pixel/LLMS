@@ -1,14 +1,14 @@
 import { prisma } from '@lmms/db';
 import { logAudit } from '@lmms/audit';
 import type { WhatsAppAdapter } from '@lmms/whatsapp';
-import { renderTemplate, type MergeContext, lookupRate } from '@lmms/whatsapp';
+import { renderTemplate, type MergeContext, lookupRate, createWhatsAppAdapterForTenant } from '@lmms/whatsapp';
 import { throttle } from './throttle';
 import { checkEligibility } from './consent-guard';
 
 export interface SendCampaignOptions {
   tenantId: string;
   campaignId: string;
-  adapter: WhatsAppAdapter;
+  adapter?: WhatsAppAdapter;
   ratePerSecond?: number;
   actorId: string;
 }
@@ -25,7 +25,8 @@ const MAX_PER_TICK = 2000;
 export async function sendCampaign(
   opts: SendCampaignOptions,
 ): Promise<SendCampaignResult> {
-  const { tenantId, campaignId, adapter, actorId } = opts;
+  const { tenantId, campaignId, actorId } = opts;
+  const adapter = opts.adapter ?? await createWhatsAppAdapterForTenant(tenantId);
   const ratePerSecond = opts.ratePerSecond ?? 20;
 
   const campaign = await prisma.campaign.findUnique({ where: { id: campaignId } });

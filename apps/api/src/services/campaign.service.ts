@@ -1,7 +1,7 @@
 import { prisma } from '@lmms/db';
 import { logAudit } from '@lmms/audit';
 import { generatePromoCode, buildUtmUrl } from '@lmms/campaigns';
-import { extractFields, ALLOWED_FIELDS, MockWhatsAppAdapter } from '@lmms/whatsapp';
+import { extractFields, ALLOWED_FIELDS, createWhatsAppAdapterForTenant } from '@lmms/whatsapp';
 
 type TemplateCategory = 'MARKETING' | 'UTILITY' | 'AUTHENTICATION' | 'SERVICE';
 
@@ -65,7 +65,7 @@ export async function submitTemplate(tenantId: string, templateId: string, actor
     if (siblings.length < 2) throw new Error('paired_template_required');
   }
 
-  const adapter = new MockWhatsAppAdapter();
+  const adapter = await createWhatsAppAdapterForTenant(tenantId);
   const result = await adapter.submitTemplate({
     name: `${t.name}_v${t.version}`,
     category: t.category as TemplateCategory,
@@ -91,7 +91,7 @@ export async function submitTemplate(tenantId: string, templateId: string, actor
 export async function syncTemplateStatus(tenantId: string, templateId: string) {
   const t = await prisma.template.findUnique({ where: { id: templateId } });
   if (!t || !t.metaId) return null;
-  const adapter = new MockWhatsAppAdapter();
+  const adapter = await createWhatsAppAdapterForTenant(tenantId);
   const remote = await adapter.getTemplateStatus(t.metaId);
   const status: 'APPROVED' | 'REJECTED' | 'PENDING' =
     remote.status === 'APPROVED' ? 'APPROVED'

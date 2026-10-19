@@ -1,7 +1,7 @@
 import { prisma } from '@lmms/db';
 import { logAudit } from '@lmms/audit';
 import { assertConsent } from '@lmms/compliance';
-import { MockWhatsAppAdapter, renderTemplate, type WhatsAppAdapter } from '@lmms/whatsapp';
+import { createWhatsAppAdapterForTenant, renderTemplate, type WhatsAppAdapter } from '@lmms/whatsapp';
 import { evaluateTrigger } from './triggers';
 import { checkFrequency, recordSend } from './frequency';
 import { isKilled } from './kill-switch';
@@ -36,7 +36,7 @@ export async function runAutomationsForTenant(
   opts: RunnerOptions,
 ): Promise<RunSummary> {
   const start = Date.now();
-  const adapter = opts.adapter ?? new MockWhatsAppAdapter();
+  const adapter = opts.adapter ?? await createWhatsAppAdapterForTenant(opts.tenantId);
   const actorId = opts.actorId ?? 'system';
 
   const tenant = await prisma.tenant.findUnique({ where: { id: opts.tenantId } });

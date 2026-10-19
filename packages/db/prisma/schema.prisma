@@ -2656,3 +2656,22 @@ model ProcessingActivity {
 
   @@index([tenantId])
 }
+
+// === V3.17 WhatsApp Multi-Tenant additions ===
+
+enum WhatsAppConfigStatus {
+  PENDING
+  CONNECTED
+  REVOKED
+}
+
+model WhatsAppConfig {
+  id            String              @id @default(uuid())
+  tenantId      String              @unique
+  wabaId        String
+  phoneNumberId String
+  accessToken   String              // In prod, encrypt at rest
+  status        WhatsAppConfigStatus @default(PENDING)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+}

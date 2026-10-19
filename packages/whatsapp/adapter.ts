@@ -40,20 +40,13 @@ export interface WhatsAppAdapter {
 
 export class MockWhatsAppAdapter implements WhatsAppAdapter {
   private counter = 0;
-  async validate(): Promise<boolean> {
-    return true;
-  }
+  async validate(): Promise<boolean> { return true; }
   async submitTemplate(input: TemplateSubmitInput): Promise<TemplateSubmitResult> {
-    if (input.bodyText.length < 10) {
-      return { ok: false, status: 'REJECTED', error: 'body_too_short' };
-    }
+    if (input.bodyText.length < 10) return { ok: false, status: 'REJECTED', error: 'body_too_short' };
     return { ok: true, metaTemplateId: `mock-tpl-${++this.counter}`, status: 'PENDING' };
   }
   async getTemplateStatus(metaTemplateId: string): Promise<TemplateStatusResult> {
-    return {
-      status: metaTemplateId.includes('reject') ? 'REJECTED' : 'APPROVED',
-      reason: metaTemplateId.includes('reject') ? 'mock_rejection' : undefined,
-    };
+    return { status: metaTemplateId.includes('reject') ? 'REJECTED' : 'APPROVED' };
   }
   async sendTemplate(input: SendTemplateInput): Promise<SendResult> {
     if (!input.to.startsWith('+')) return { ok: false, error: 'invalid_phone' };
@@ -69,7 +62,15 @@ export class CloudApiWhatsAppAdapter implements WhatsAppAdapter {
   ) {}
 
   async validate(): Promise<boolean> {
-    return !!(this.phoneNumberId && this.accessToken);
+    if (!this.phoneNumberId || !this.accessToken) return false;
+    try {
+      const res = await fetch(`${this.baseUrl}/${this.phoneNumberId}`, {
+        headers: { Authorization: `Bearer ${this.accessToken}` },
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
   }
 
   async submitTemplate(input: TemplateSubmitInput): Promise<TemplateSubmitResult> {
@@ -78,25 +79,16 @@ export class CloudApiWhatsAppAdapter implements WhatsAppAdapter {
       category: input.category,
       language: input.language,
       components: [
-        {
-          type: 'BODY',
-          text: input.bodyText,
-          example: { body_text: [input.variables.map(() => 'sample')] },
-        },
+        { type: 'BODY', text: input.bodyText, example: { body_text: [input.variables.map(() => 'sample')] } },
       ],
     };
     const res = await fetch(`${this.baseUrl}/${this.phoneNumberId}/message_templates`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.accessToken}`,
-      },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.accessToken}` },
       body: JSON.stringify(body),
     });
     const data = (await res.json()) as { id?: string; error?: { message?: string } };
-    if (!res.ok) {
-      return { ok: false, status: 'REJECTED', error: data?.error?.message ?? 'submit_failed' };
-    }
+    if (!res.ok) return { ok: false, status: 'REJECTED', error: data?.error?.message ?? 'submit_failed' };
     return { ok: true, metaTemplateId: data.id, status: 'PENDING' };
   }
 
@@ -116,35 +108,18 @@ export class CloudApiWhatsAppAdapter implements WhatsAppAdapter {
       template: {
         name: input.templateName,
         language: { code: input.language },
-        components:
-          input.variables && Object.keys(input.variables).length
-            ? [
-                {
-                  type: 'body',
-                  parameters: Object.values(input.variables).map((v) => ({
-                    type: 'text',
-                    text: v,
-                  })),
-                },
-              ]
-            : undefined,
+        components: input.variables && Object.keys(input.variables).length
+          ? [{ type: 'body', parameters: Object.values(input.variables).map((v) => ({ type: 'text', text: v })) }]
+          : undefined,
       },
     };
     const res = await fetch(`${this.baseUrl}/${this.phoneNumberId}/messages`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.accessToken}`,
-      },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.accessToken}` },
       body: JSON.stringify(body),
     });
-    const data = (await res.json()) as {
-      messages?: Array<{ id: string }>;
-      error?: { message?: string };
-    };
-    if (!res.ok) {
-      return { ok: false, error: data?.error?.message ?? 'send_failed' };
-    }
+    const data = (await res.json()) as { messages?: Array<{ id: string }>; error?: { message?: string } };
+    if (!res.ok) return { ok: false, error: data?.error?.message ?? 'send_failed' };
     return { ok: true, metaMessageId: data.messages?.[0]?.id };
   }
 }
