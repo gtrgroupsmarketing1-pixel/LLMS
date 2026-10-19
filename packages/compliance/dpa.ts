@@ -29,11 +29,35 @@ export async function getOrCreateDpa(tenantId: string, actorId: string) {
   return created;
 }
 
-export async function acceptDpa(tenantId: string, dpaId: string, actorId: string) {
-  const updated = await prisma.dpaTemplate.update({
-    where: { id: dpaId },
-    data: { acceptedAt: new Date() },
+export interface AcceptDpaInput {
+  tenantId: string;
+  actorId: string;
+  dpaId: string;
+  ipAddress?: string;
+  signatureData?: string;
+}
+
+export async function acceptDpa(input: AcceptDpaInput) {
+  const dpa = await prisma.dpaTemplate.findUnique({
+    where: { id: input.dpaId },
   });
-  await logAudit(tenantId, actorId, 'dpa.accept', `dpa:${dpaId}`);
-  return updated;
+  if (!dpa) throw new Error('dpa_not_found');
+
+  const acceptance = await prisma.dpaAcceptance.create({
+    data: {
+      tenantId: input.tenantId,
+      dpaTemplateId: dpa.id,
+      acceptedBy: input.actorId,
+      ipAddress: input.ipAddress ?? null,
+      signatureData: input.signatureData ?? null,
+    },
+  });
+
+  await prisma.tenant.update({
+    where: { id: input.tenantId },
+    data: { dpaAcceptedAt: new Date() },
+  });
+
+  await logAudit(input.tenantId, input.actorId, 'dpa.accept', `dpa_acceptance:${acceptance.id}`);
+  return acceptance;
 }

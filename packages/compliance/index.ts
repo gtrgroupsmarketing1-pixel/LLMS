@@ -5,4 +5,7 @@ export * from './erasure';
 export * from './retention';
 export * from './sms-sender-id';
 export * from './dpa';
+export * from './privacy-policy';
+export * from './processing-registry';
+export * from './seed-defaults';
 export * from './dashboard';
