@@ -2,7 +2,7 @@ import { prisma } from '@lmms/db';
 import { logAudit } from '@lmms/audit';
 import { buildInvoice, type BuildInvoiceInput } from './invoice-builder';
 import { generateInvoicePdf } from './pdf';
-import { adapterFor } from './adapters';
+import { getPaymentAdapter } from './adapters';
 
 export async function getSubscription(tenantId: string) {
   return prisma.subscription.findUnique({ where: { tenantId } });
@@ -132,7 +132,7 @@ export async function initiatePayment(opts: {
   if (invoice.status === 'PAID') throw new Error('already_paid');
   if (invoice.status === 'VOID') throw new Error('invoice_voided');
 
-  const adapter = adapterFor(opts.provider);
+  const adapter = getPaymentAdapter(opts.provider);
   const intent = await adapter.createIntent({
     amount: Number(invoice.total),
     currency: invoice.currency,
@@ -183,7 +183,7 @@ export async function capturePayment(opts: {
   }
   if (payment.status === 'CAPTURED') return payment;
 
-  const adapter = adapterFor(payment.provider);
+  const adapter = getPaymentAdapter(payment.provider);
   if (payment.externalId) {
     const result = await adapter.capturePayment(payment.externalId);
     if (!result.ok) {
