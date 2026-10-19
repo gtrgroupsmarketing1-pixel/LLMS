@@ -2675,3 +2675,22 @@ model WhatsAppConfig {
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
 }
+
+// === V3.17 ERP Config additions ===
+
+enum ErpConfigStatus {
+  PENDING
+  CONNECTED
+  REVOKED
+}
+
+model ErpConfig {
+  id            String          @id @default(uuid())
+  tenantId      String          @unique
+  apiUrl        String
+  apiKey        String
+  status        ErpConfigStatus @default(PENDING)
+  lastSyncAt    DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
