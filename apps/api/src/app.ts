@@ -4,6 +4,8 @@ import { requestIdMiddleware } from './middleware/requestId';
 import { globalRateLimit } from './middleware/rateLimit';
 import { securityHeaders } from './middleware/security';
 import { tenantScopeGuard } from './middleware/tenantScope';
+import { requestLogger } from './middleware/logger';
+import { errorTracker } from './middleware/errorTracker';
 import { authRouter } from './routes/auth.routes';
 import { tenantRouter } from './routes/tenant.routes';
 import { ingestionRouter } from './routes/ingestion.routes';
@@ -40,6 +42,8 @@ export function createApp() {
   const app = express();
   
   app.use(securityHeaders);
+  app.use(requestIdMiddleware);
+  app.use(requestLogger);
   
   app.use(express.json({ 
     limit: '10mb',
@@ -48,7 +52,6 @@ export function createApp() {
     }
   }));
 
-  app.use(requestIdMiddleware);
   app.use(globalRateLimit);
 
   app.get('/health', (_req, res) => res.json({ ok: true, service: 'lmms-api' }));
@@ -85,6 +88,7 @@ export function createApp() {
   app.use('/erp-migration', erpMigrationRouter);
   app.use('/modules', modulesRouter);
 
+  app.use(errorTracker);
   app.use(errorHandler);
   return app;
 }
