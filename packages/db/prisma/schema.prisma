@@ -83,6 +83,8 @@ model Tenant {
   greenTickStatus String        @default("NOT_APPLIED")
   resellerId      String?
   region          DataRegion    @default(UAE)
+  privacyPolicyAcceptedAt DateTime?
+  dpaAcceptedAt           DateTime?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
@@ -2605,4 +2607,52 @@ model TenantModule {
 
   @@unique([tenantId, moduleKey])
   @@index([tenantId, enabled])
+}
+
+// === V3.12 Compliance Re-Audit additions ===
+
+model DpaAcceptance {
+  id            String   @id @default(uuid())
+  tenantId      String
+  dpaTemplateId String
+  acceptedBy    String
+  acceptedAt    DateTime @default(now())
+  ipAddress     String?
+  signatureData String?  // e.g., typed name or hash of signed PDF
+
+  @@index([tenantId, acceptedAt])
+}
+
+model PrivacyPolicy {
+  id         String   @id @default(uuid())
+  version    String   @unique // e.g., "2026-v1"
+  contentEn  String
+  contentAr  String
+  publishedAt DateTime @default(now())
+}
+
+model PrivacyPolicyAcceptance {
+  id              String   @id @default(uuid())
+  tenantId        String
+  privacyPolicyId String
+  acceptedBy      String
+  acceptedAt      DateTime @default(now())
+  ipAddress       String?
+
+  @@unique([tenantId, privacyPolicyId])
+  @@index([tenantId, acceptedAt])
+}
+
+model ProcessingActivity {
+  id            String   @id @default(uuid())
+  tenantId      String?  // If null, it's a system-wide activity
+  name          String
+  purpose       String
+  dataCategories Json    // e.g., ["phone", "name", "order_history"]
+  legalBasis    String   // e.g., "CONSENT", "CONTRACT"
+  retentionDays Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([tenantId])
 }
