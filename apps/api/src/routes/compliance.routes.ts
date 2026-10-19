@@ -16,6 +16,10 @@ import {
   getOrCreateDpa,
   acceptDpa,
   getComplianceDashboard,
+  getLatestPrivacyPolicy,
+  recordPrivacyPolicyAcceptance,
+  listProcessingActivities,
+  seedComplianceDefaults,
 } from '@lmms/compliance';
 
 export const complianceRouter = Router();
@@ -25,7 +29,8 @@ complianceRouter.post('/webhook/opt-out', async (req, res, next) => {
   try {
     const { tenantId, customerId, channel, source, evidence } = req.body ?? {};
     if (!tenantId || !customerId || !channel) {
-      return res.status(400).json({ error: 'missing_fields' });
+      res.status(400).json({ error: 'missing_fields' });
+      return;
     }
     const r = await processOptOut({
       tenantId,
@@ -34,17 +39,16 @@ complianceRouter.post('/webhook/opt-out', async (req, res, next) => {
       source: source ?? 'webhook',
       evidence,
     });
-    return res.json(r);
-  } catch (e) {
-    return next(e);
-  }
+    res.json(r);
+  } catch (e) { next(e); }
 });
 
 complianceRouter.post('/webhook/erasure', async (req, res, next) => {
   try {
     const { tenantId, customerId, scope, notes } = req.body ?? {};
     if (!tenantId || !customerId) {
-      return res.status(400).json({ error: 'missing_fields' });
+      res.status(400).json({ error: 'missing_fields' });
+      return;
     }
     const r = await createErasureRequest({
       tenantId,
@@ -53,10 +57,8 @@ complianceRouter.post('/webhook/erasure', async (req, res, next) => {
       actorId: 'webhook',
       notes,
     });
-    return res.status(201).json(r);
-  } catch (e) {
-    return next(e);
-  }
+    res.status(201).json(r);
+  } catch (e) { next(e); }
 });
 
 // All routes below require auth
@@ -87,24 +89,11 @@ complianceRouter.post(
         data: {
           tenantId,
           customerId: String(req.body?.customerId ?? ''),
-          channel: (req.body?.channel ?? 'WHATSAPP') as
-            | 'WHATSAPP'
-            | 'SMS'
-            | 'EMAIL',
-          purpose: (req.body?.purpose ?? 'MARKETING') as
-            | 'MARKETING'
-            | 'TRANSACTIONAL'
-            | 'AUTHENTICATION'
-            | 'SERVICE',
-          status: (req.body?.status ?? 'OPT_IN') as
-            | 'OPT_IN'
-            | 'OPT_OUT'
-            | 'PENDING'
-            | 'WITHDRAWN',
+          channel: (req.body?.channel ?? 'WHATSAPP') as never,
+          purpose: (req.body?.purpose ?? 'MARKETING') as never,
+          status: (req.body?.status ?? 'OPT_IN') as never,
           source: String(req.body?.source ?? 'manual'),
-          evidence: req.body?.evidence
-            ? String(req.body.evidence)
-            : undefined,
+          evidence: req.body?.evidence ? String(req.body.evidence) : undefined,
         },
       });
       await logAudit(tenantId, req.auth!.sub, 'consent.manual', `consent:${record.id}`);
@@ -148,12 +137,7 @@ complianceRouter.post(
           addedBy: req.auth!.sub,
         },
       });
-      await logAudit(
-        tenantId,
-        req.auth!.sub,
-        'dnc.add',
-        `customer:${req.body?.customerId}`,
-      );
+      await logAudit(tenantId, req.auth!.sub, 'dnc.add', `customer:${req.body?.customerId}`);
       res.status(201).json(created);
     } catch (e) { next(e); }
   },
@@ -177,7 +161,7 @@ complianceRouter.post(
       const r = await createErasureRequest({
         tenantId: req.params.tenantId as string,
         customerId: String(req.body?.customerId ?? ''),
-        scope: (req.body?.scope ?? 'PII_ONLY') as 'PII_ONLY' | 'FULL',
+        scope: (req.body?.scope ?? 'PII_ONLY') as never,
         actorId: req.auth!.sub,
         notes: req.body?.notes ? String(req.body.notes) : undefined,
       });
@@ -218,11 +202,13 @@ complianceRouter.post(
   async (_req, res, next) => {
     try {
       await seedRetentionPolicies();
+      await seedComplianceDefaults();
       res.json({ ok: true });
     } catch (e) { next(e); }
   },
 );
 
+// DPA routes
 complianceRouter.get(
   '/tenants/:tenantId/dpa',
   requireAgency('OWNER', 'ADMIN', 'OPS'),
@@ -241,16 +227,56 @@ complianceRouter.post(
   async (req, res, next) => {
     try {
       res.json(
-        await acceptDpa(
-          req.params.tenantId as string,
-          req.params.dpaId as string,
-          req.auth!.sub,
-        ),
+        await acceptDpa({
+          tenantId: req.params.tenantId as string,
+          actorId: req.auth!.sub,
+          dpaId: req.params.dpaId as string,
+          ipAddress: req.ip,
+          signatureData: req.body?.signatureData
+            ? String(req.body.signatureData)
+            : undefined,
+        }),
       );
     } catch (e) { next(e); }
   },
 );
 
+// Privacy Policy routes
+complianceRouter.get('/compliance/privacy-policy', async (_req, res, next) => {
+  try {
+    res.json(await getLatestPrivacyPolicy());
+  } catch (e) { next(e); }
+});
+
+complianceRouter.post(
+  '/tenants/:tenantId/privacy-policy/:policyId/accept',
+  requireAgency('OWNER', 'ADMIN'),
+  async (req, res, next) => {
+    try {
+      res.json(
+        await recordPrivacyPolicyAcceptance({
+          tenantId: req.params.tenantId as string,
+          actorId: req.auth!.sub,
+          policyId: req.params.policyId as string,
+          ipAddress: req.ip,
+        }),
+      );
+    } catch (e) { next(e); }
+  },
+);
+
+// Processing Activity Registry
+complianceRouter.get(
+  '/compliance/processing-activities',
+  async (req, res, next) => {
+    try {
+      const tenantId = req.query.tenantId ? String(req.query.tenantId) : undefined;
+      res.json(await listProcessingActivities(tenantId));
+    } catch (e) { next(e); }
+  },
+);
+
+// SMS Sender IDs
 complianceRouter.get(
   '/tenants/:tenantId/sms-senders',
   requireAgency('OWNER', 'ADMIN', 'OPS'),
@@ -293,27 +319,26 @@ complianceRouter.post(
   },
 );
 
+// Compliance dashboard
 complianceRouter.get(
   '/tenants/:tenantId/compliance/dashboard',
   requireAgency('OWNER', 'ADMIN', 'OPS'),
   async (req, res, next) => {
     try {
-      res.json(
-        await getComplianceDashboard(req.params.tenantId as string),
-      );
+      res.json(await getComplianceDashboard(req.params.tenantId as string));
     } catch (e) { next(e); }
   },
 );
 
+// Audit log with pagination
 complianceRouter.get(
   '/tenants/:tenantId/audit',
-  requireAuth,
   requireAgency('OWNER', 'ADMIN'),
   async (req, res, next) => {
     try {
       const cursor = req.query.cursor ? String(req.query.cursor) : undefined;
       const limit = req.query.limit ? Number(req.query.limit) : 50;
-      
+
       const page = await paginate(
         prisma.auditLog,
         {
@@ -333,6 +358,19 @@ complianceRouter.get(
   async (req, res, next) => {
     try {
       res.json(await verifyAuditChain(req.params.tenantId as string));
+    } catch (e) { next(e); }
+  },
+);
+
+// Legacy exports kept for backwards compat
+complianceRouter.get(
+  '/tenants/:tenantId/audit/export',
+  requireAgency('OWNER', 'ADMIN'),
+  async (req, res, next) => {
+    try {
+      const since = req.query.since ? new Date(String(req.query.since)) : undefined;
+      const until = req.query.until ? new Date(String(req.query.until)) : undefined;
+      res.json(await exportAuditLog(req.params.tenantId as string, since, until));
     } catch (e) { next(e); }
   },
 );
