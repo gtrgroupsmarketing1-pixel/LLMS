@@ -1,0 +1,48 @@
+services:
+  # 1. The Express API
+  - type: web
+    name: lmms-api
+    env: node
+    plan: starter
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @lmms/db exec prisma generate
+    startCommand: pnpm --filter @lmms/api start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # You will paste the Neon URL in the Render dashboard
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: lmms-redis
+          property: connectionString
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: PUBLIC_APP_URL
+        sync: false # You will paste the Vercel URL here
+
+  # 2. The Background Worker
+  - type: worker
+    name: lmms-worker
+    env: node
+    plan: starter
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @lmms/db exec prisma generate
+    startCommand: pnpm --filter @lmms/worker start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # Paste Neon URL here too
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: lmms-redis
+          property: connectionString
+
+  # 3. Redis Cache (managed automatically by Render)
+  - type: redis
+    name: lmms-redis
+    plan: free
+    ipAllowList: []
