@@ -1,6 +1,6 @@
 import { prisma } from '@lmms/db';
 import { logAudit } from '@lmms/audit';
-import { assertValidBlocks, captureLead, trackVisit } from '@lmms/website';
+import { assertValidBlocks, captureLead, trackVisit } from '@lmms/website/server';
 
 export async function getOrCreateWebsite(tenantId: string, actorId: string) {
   const existing = await prisma.website.findUnique({ where: { tenantId } });

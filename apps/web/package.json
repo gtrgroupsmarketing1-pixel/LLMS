@@ -15,7 +15,6 @@
     "react-dom": "^18.3.1",
     "reactflow": "^11.11.4",
     "@lmms/config": "workspace:*",
-    "@lmms/journey-builder": "workspace:*",
     "@lmms/ui": "workspace:*",
     "@lmms/website": "workspace:*",
     "clsx": "^2.1.1",

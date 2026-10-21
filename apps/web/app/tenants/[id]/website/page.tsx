@@ -15,7 +15,7 @@ import {
   Skeleton,
 } from '@lmms/ui';
 import { authedFetch } from '../../../../lib/session';
-import { PAGE_TEMPLATES } from '@lmms/website';
+import { PAGE_TEMPLATES } from '@lmms/website/templates';
 
 interface Website {
   id: string;

@@ -4,6 +4,13 @@
   "private": true,
   "main": "index.ts",
   "types": "index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./server": "./server.ts",
+    "./templates": "./templates.ts",
+    "./blocks": "./blocks.ts",
+    "./validate": "./validate.ts"
+  },
   "scripts": { "typecheck": "tsc --noEmit" },
   "dependencies": {
     "zod": "^3.23.8",
